@@ -48,6 +48,66 @@
     font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
     text-rendering: optimizeLegibility;
   }
+
+  /* Reading progress indicator */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    width: 0%;
+    background: var(--accent);
+    z-index: 100;
+    will-change: width;
+    transition: width 0.05s linear;
+    box-shadow: 0 1px 4px rgba(210, 166, 44, 0.4);
+  }
+  .progress-meta {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: saturate(140%) blur(8px);
+    -webkit-backdrop-filter: saturate(140%) blur(8px);
+    border: 1px solid var(--rule);
+    padding: 8px 14px;
+    font-family: "Inter", sans-serif;
+    font-size: 11px;
+    color: var(--ink);
+    z-index: 99;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 600;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .progress-meta.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .progress-meta .pct {
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .progress-meta .sep {
+    color: var(--rule);
+  }
+  .progress-meta .left {
+    color: var(--muted);
+    font-weight: 500;
+  }
+  @media (max-width: 700px) {
+    .progress-meta {
+      bottom: 16px;
+      right: 16px;
+      padding: 6px 10px;
+      font-size: 10px;
+    }
+  }
   /* Masthead overlaid on the hero image — no separate topbar */
   .cover-image {
     position: relative;
@@ -707,6 +767,61 @@
 </style>
 </head>
 <body>
+
+  <div class="progress-bar" id="progressBar" role="progressbar" aria-label="Reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+  <div class="progress-meta" id="progressMeta">
+    <span class="pct" id="progressPct">0%</span>
+    <span class="sep">·</span>
+    <span class="left" id="progressLeft">14 min left</span>
+  </div>
+
+  <script>
+    (function() {
+      var bar = document.getElementById('progressBar');
+      var meta = document.getElementById('progressMeta');
+      var pct = document.getElementById('progressPct');
+      var left = document.getElementById('progressLeft');
+      var TOTAL_MIN = 14;
+      var rafScheduled = false;
+
+      function update() {
+        rafScheduled = false;
+        var article = document.querySelector('article.body') || document.body;
+        var rect = article.getBoundingClientRect();
+        var docTop = window.scrollY || window.pageYOffset;
+        var articleStart = docTop + rect.top;
+        var articleEnd = articleStart + article.offsetHeight - window.innerHeight;
+        var range = Math.max(articleEnd - articleStart, 1);
+        var current = Math.min(Math.max(docTop - articleStart, 0), range);
+        var ratio = current / range;
+        var percent = Math.round(ratio * 100);
+
+        bar.style.width = percent + '%';
+        bar.setAttribute('aria-valuenow', String(percent));
+        pct.textContent = percent + '%';
+        var minLeft = Math.max(0, Math.round(TOTAL_MIN * (1 - ratio)));
+        left.textContent = minLeft + ' min left';
+
+        // Show the readout once user has started reading the article
+        if (docTop > articleStart - 200) {
+          meta.classList.add('visible');
+        } else {
+          meta.classList.remove('visible');
+        }
+      }
+
+      function onScroll() {
+        if (!rafScheduled) {
+          rafScheduled = true;
+          requestAnimationFrame(update);
+        }
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll);
+      document.addEventListener('DOMContentLoaded', update);
+    })();
+  </script>
 
   <figure class="cover-image">
     <div class="masthead-overlay">
