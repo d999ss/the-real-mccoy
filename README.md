@@ -1,6 +1,6 @@
-# The Dispatch
+# The Real McCoy
 
-A living investigation into surveillance, procurement, and disclosure in Utah's Wasatch Back.
+Investigative journalism on Utah's Wasatch Back. The genuine article.
 
 ## Current investigation
 
@@ -32,11 +32,7 @@ Raw data files are not included in this repository. The endpoints are documented
 
 ## Hosting
 
-This site is a single static `index.html` with no build step. It deploys directly to Vercel, Netlify, GitHub Pages, or any static host.
-
-```
-vercel --prod
-```
+This site is a single static `index.html` with no build step. It deploys directly to Vercel at https://the-real-mccoy.vercel.app on every push to `main`.
 
 ## License
 
