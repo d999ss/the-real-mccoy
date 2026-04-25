@@ -77,36 +77,7 @@
     font-size: 10.5px;
   }
 
-  /* Forbes Daily Cover pattern — rubric + headline above, image below */
-  .cover-head {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 56px 32px 40px;
-    text-align: center;
-  }
-  .rubric {
-    font-family: "Inter", sans-serif;
-    font-size: 11px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--ink);
-    font-weight: 700;
-    margin-bottom: 28px;
-  }
-  .cover-head h1 {
-    font-family: "Spectral", "Iowan Old Style", "Georgia", serif;
-    font-weight: 700;
-    font-size: 72px;
-    line-height: 1.04;
-    letter-spacing: -0.035em;
-    margin: 0 auto;
-    color: var(--ink);
-    max-width: 980px;
-    font-feature-settings: "kern" 1, "liga" 1;
-    text-rendering: optimizeLegibility;
-  }
-
-  /* Full-width image below cover headline */
+  /* Image at top, title-over-boilerplate below */
   .cover-image {
     width: 100%;
     margin: 0;
@@ -120,23 +91,51 @@
     display: block;
   }
 
-  /* Article meta block under image */
+  .cover-head {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 56px 32px 28px;
+    text-align: center;
+  }
+  .rubric {
+    font-family: "Inter", sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink);
+    font-weight: 700;
+    margin-bottom: 24px;
+  }
+  .cover-head h1 {
+    font-family: "Spectral", "Iowan Old Style", "Georgia", serif;
+    font-weight: 700;
+    font-size: 64px;
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    margin: 0 auto 28px;
+    color: var(--ink);
+    max-width: 880px;
+    font-feature-settings: "kern" 1, "liga" 1;
+    text-rendering: optimizeLegibility;
+  }
+  .cover-head .deck-below {
+    font-family: "Inter", "Helvetica Neue", sans-serif;
+    font-weight: 400;
+    font-size: 21px;
+    line-height: 1.5;
+    letter-spacing: -0.005em;
+    color: #444;
+    margin: 0 auto;
+    max-width: 700px;
+    font-feature-settings: "kern" 1, "liga" 1;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Author/share strip below the cover head */
   .meta-strip {
     max-width: 760px;
     margin: 32px auto 0;
     padding: 0 32px;
-  }
-  .meta-strip .deck-below {
-    font-family: "Inter", "Helvetica Neue", sans-serif;
-    font-weight: 400;
-    font-size: 22px;
-    line-height: 1.45;
-    letter-spacing: -0.005em;
-    color: #333;
-    margin: 0 0 32px;
-    max-width: 680px;
-    font-feature-settings: "kern" 1, "liga" 1;
-    text-rendering: optimizeLegibility;
   }
 
   /* Forbes-style author block */
@@ -575,11 +574,11 @@
     .topbar { padding: 10px 16px; }
     .topbar nav { font-size: 9.5px; }
     .masthead { font-size: 18px; }
-    .cover-head { padding: 36px 20px 28px; }
-    .cover-head h1 { font-size: 36px; letter-spacing: -0.03em; }
-    .rubric { font-size: 10px; letter-spacing: 0.18em; margin-bottom: 20px; }
+    .cover-head { padding: 32px 20px 20px; }
+    .cover-head h1 { font-size: 36px; letter-spacing: -0.03em; margin-bottom: 22px; }
+    .cover-head .deck-below { font-size: 17px; }
+    .rubric { font-size: 10px; letter-spacing: 0.18em; margin-bottom: 18px; }
     .meta-strip { padding: 0 20px; margin-top: 24px; }
-    .meta-strip .deck-below { font-size: 18px; margin-bottom: 24px; }
     .author-block { gap: 12px; flex-wrap: wrap; }
     .avatar { width: 40px; height: 40px; font-size: 15px; }
     .meta-right { margin-left: 0; text-align: left; flex-basis: 100%; padding-top: 8px; border-top: 1px solid var(--rule); }
@@ -603,19 +602,19 @@
     <nav>Investigations · Wasatch Back</nav>
   </div>
 
-  <header class="cover-head">
-    <div class="rubric">The Cover</div>
-    <h1>Is Park City Flocked?</h1>
-  </header>
-
   <figure class="cover-image">
     <img src="hero.jpg" alt="A moose with surveillance cameras growing from its antlers, on a Park City–style red bridge.">
   </figure>
 
-  <div class="meta-strip">
+  <header class="cover-head">
+    <div class="rubric">The Cover</div>
+    <h1>Is Park City Flocked?</h1>
     <p class="deck-below">
       At least twenty-six automated license plate readers form a perimeter around the basin. Eight sit inside Park City's corporate limits. The published policies that govern them contain language the Utah Privacy Office has already flagged as exceeding state law. The system itself is acknowledged in one sentence in one sole-source procurement waiver, signed by a captain in February 2025.
     </p>
+  </header>
+
+  <div class="meta-strip">
     <div class="author-block">
       <div class="avatar">HM</div>
       <div class="author-info">
@@ -635,17 +634,6 @@
       </div>
     </div>
   </div>
-
-  <figure class="lede-figure">
-    <div id="map" aria-label="Map of mapped ALPR locations around Park City basin">
-      <div class="map-legend">
-        <strong>Mapped ALPR cameras</strong>
-        <div><span class="swatch gold"></span>Flock Safety <span>(24)</span></div>
-        <div><span class="swatch red"></span>Motorola / Vigilant <span>(2)</span></div>
-      </div>
-    </div>
-    <figcaption><strong>At least twenty-six ALPR cameras around Park City, Utah</strong>, derived from OpenStreetMap surveillance node data (24 Flock Safety, 2 Motorola/Vigilant). Coverage spans every major entry corridor: Coalville and Hoytsville on the eastern I-80 approach, Pinebrook and Jeremy Ranch on the western I-80 approach, the Mayflower and Jordanelle corridor on US-40, Kimball Junction on SR-224, and the Heber Valley and Empire Pass corridors south. Click any marker for vendor and OSM source. <em>Pulled 2026-04-26 via Overpass API.</em></figcaption>
-  </figure>
 
   <script>
     const cameras = [
@@ -710,6 +698,17 @@
     <h2>The perimeter</h2>
 
     <p>A geospatial review of <a href="https://overpass.kumi.systems/api/interpreter">public mapping data</a>, pulled from <a href="https://www.openstreetmap.org/">OpenStreetMap</a> on April 26, 2026, identifies at least twenty-six automated license plate readers positioned around the Park City basin and the I-80 corridors that lead in and out of it. Twenty-four are tagged Flock Safety. Two are tagged Motorola Solutions, the parent company of the Vigilant platform Park City Police acknowledged owning. They sit on poles along I-80, US-40, and SR-224, near roundabouts and resort turnoffs, with clusters at every entry choke point — Coalville and Hoytsville on the eastern I-80 approach, Pinebrook and Jeremy Ranch on the western I-80 approach, the Mayflower and Jordanelle corridor on US-40, Kimball Junction on SR-224, and the Heber Valley and Empire Pass corridors south. Some are <a href="https://www.openstreetmap.org/node/12783977497">paired</a>, spaced just far enough apart to capture vehicles in both directions. Others are mounted at choke points where every driver must pass.</p>
+
+    <figure class="lede-figure">
+      <div id="map" aria-label="Map of mapped ALPR locations around Park City basin">
+        <div class="map-legend">
+          <strong>Mapped ALPR cameras</strong>
+          <div><span class="swatch gold"></span>Flock Safety <span>(24)</span></div>
+          <div><span class="swatch red"></span>Motorola / Vigilant <span>(2)</span></div>
+        </div>
+      </div>
+      <figcaption><strong>The perimeter, mapped.</strong> Twenty-four Flock Safety cameras and two Motorola/Vigilant cameras around Park City, Utah, derived from OpenStreetMap surveillance node data. Click any marker for vendor and OSM source. <em>Pulled 2026-04-26 via Overpass API.</em></figcaption>
+    </figure>
 
     <p>Eight of the twenty-six sit inside Park City's corporate limits. The figure comes from a point-in-polygon check against <a href="https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahMunicipalBoundaries/FeatureServer/0/query?where=NAME%3D%27PARK+CITY%27&f=geojson&outFields=*">the State of Utah's authoritative municipal boundary file</a>, published by the Utah Automated Geographic Reference Center. The cameras appear along SR-224, Deer Valley Drive, the Empire Pass corridor, and the southern annexed pockets toward Quinn's Junction. The remaining eighteen cameras sit in unincorporated Summit and Wasatch counties — but every road in or out of Park City passes one.</p>
 
