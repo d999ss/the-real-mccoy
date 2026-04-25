@@ -45,6 +45,8 @@
     line-height: 1.7;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    text-rendering: optimizeLegibility;
   }
   .topbar {
     border-bottom: 1px solid var(--rule);
@@ -89,19 +91,24 @@
     font-family: "Spectral", "Iowan Old Style", "Georgia", serif;
     font-weight: 700;
     font-size: 64px;
-    line-height: 1.02;
-    letter-spacing: -0.025em;
+    line-height: 1.0;
+    letter-spacing: -0.04em;
     margin: 0 0 28px;
     color: var(--ink);
+    font-feature-settings: "kern" 1, "liga" 1;
+    text-rendering: optimizeLegibility;
   }
   .deck {
     font-family: "Spectral", serif;
     font-weight: 400;
     font-size: 24px;
-    line-height: 1.4;
+    line-height: 1.38;
+    letter-spacing: -0.005em;
     color: #333;
     margin: 0 0 40px;
     max-width: 640px;
+    font-feature-settings: "kern" 1, "liga" 1;
+    text-rendering: optimizeLegibility;
   }
   .byline-row {
     display: flex;
