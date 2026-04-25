@@ -660,6 +660,87 @@
   table.spend td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
   table.spend tr:last-child td { border-bottom: 2px solid var(--rule-dark); }
 
+  /* Author bio block at end of article */
+  .author-bio {
+    max-width: 680px;
+    margin: 64px auto 0;
+    padding: 36px 32px;
+    border-top: 2px solid var(--ink);
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    font-family: "Inter", sans-serif;
+  }
+  .author-bio .avatar-lg {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--ink) 0%, #3a3a3a 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Spectral", serif;
+    font-weight: 700;
+    font-size: 24px;
+    letter-spacing: -0.01em;
+    flex-shrink: 0;
+  }
+  .author-bio .bio-body {
+    flex: 1;
+  }
+  .author-bio .bio-name {
+    font-family: "Spectral", serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+  .author-bio .bio-role {
+    font-size: 12px;
+    color: var(--link);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+  }
+  .author-bio .bio-text {
+    font-family: "Spectral", serif;
+    font-size: 17px;
+    line-height: 1.55;
+    color: #333;
+    margin: 0 0 18px;
+    letter-spacing: -0.005em;
+  }
+  .author-bio .bio-links {
+    display: flex;
+    gap: 18px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+  .author-bio .bio-links a {
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(181, 29, 36, 0.4);
+    padding-bottom: 1px;
+  }
+  .author-bio .bio-links a:hover {
+    border-bottom-color: var(--link);
+    color: var(--link);
+  }
+  @media (max-width: 700px) {
+    .author-bio { padding: 28px 20px; gap: 16px; }
+    .author-bio .avatar-lg { width: 52px; height: 52px; font-size: 20px; }
+    .author-bio .bio-name { font-size: 19px; }
+    .author-bio .bio-text { font-size: 16px; }
+    .author-bio .bio-links { flex-wrap: wrap; gap: 12px; }
+  }
+
   /* Sources */
   .sources {
     background: #f7f5f0;
@@ -1200,6 +1281,20 @@
     <p class="closer"><a href="https://parkcity.gov/Home/Components/RFP/RFP/15864/2339">One captain's sentence</a>, posted to the city RFP portal in February 2025, is the only thing on the public record that confirms the system exists. The cameras have been running ever since.</p>
 
   </article>
+
+  <aside class="author-bio">
+    <div class="avatar-lg">HM</div>
+    <div class="bio-body">
+      <div class="bio-name">Hawk Mikado</div>
+      <div class="bio-role">Staff Writer · Investigations</div>
+      <p class="bio-text">Hawk Mikado is a staff writer at <em>The Real McCoy</em> covering surveillance, procurement, and accountability in Utah's Wasatch Back. He works at the intersection of public records, government data, and the gap between what agencies say and what the documents actually show. Tips welcome.</p>
+      <div class="bio-links">
+        <a href="mailto:tips@therealmccoy.press">tips@therealmccoy.press</a>
+        <a href="#">Signal &amp; Encrypted</a>
+        <a href="https://github.com/d999ss/the-real-mccoy">Source &amp; Methodology</a>
+      </div>
+    </div>
+  </aside>
 
   <section class="sources">
     <div class="sources-inner">
