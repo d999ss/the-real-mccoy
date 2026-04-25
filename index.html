@@ -77,52 +77,108 @@
     font-size: 10.5px;
   }
 
-  /* Forbes-style hero with breadcrumb + headline + subhead + author block */
-  .hero {
-    max-width: 760px;
+  /* Cover hero — image with overlay headline */
+  .cover {
+    position: relative;
+    width: 100%;
+    min-height: 78vh;
+    background: #0a0a0a;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+  }
+  .cover-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 100%);
+    z-index: 0;
+  }
+  .cover::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg,
+      rgba(0,0,0,0.20) 0%,
+      rgba(0,0,0,0.05) 35%,
+      rgba(0,0,0,0.55) 75%,
+      rgba(0,0,0,0.92) 100%);
+    z-index: 1;
+    pointer-events: none;
+  }
+  .cover-inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 56px 32px 32px;
-    text-align: left;
+    padding: 60px 32px 56px;
+    color: #fff;
   }
   .breadcrumb {
     font-family: "Inter", sans-serif;
     font-size: 11px;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--muted);
+    color: rgba(255,255,255,0.85);
     font-weight: 600;
     margin-bottom: 24px;
   }
   .breadcrumb .sep {
-    color: #c0c0c0;
+    color: rgba(255,255,255,0.4);
     margin: 0 8px;
   }
   .breadcrumb .live {
-    color: var(--link);
+    color: #ff5b66;
     font-weight: 700;
   }
-  h1 {
+  .cover h1 {
     font-family: "Spectral", "Iowan Old Style", "Georgia", serif;
     font-weight: 700;
-    font-size: 56px;
-    line-height: 1.04;
-    letter-spacing: -0.035em;
-    margin: 0 0 20px;
-    color: var(--ink);
+    font-size: 72px;
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    margin: 0 0 24px;
+    color: #fff;
+    max-width: 900px;
     font-feature-settings: "kern" 1, "liga" 1;
     text-rendering: optimizeLegibility;
+    text-shadow: 0 2px 24px rgba(0,0,0,0.35);
   }
-  .deck {
+  .cover .deck {
     font-family: "Inter", "Helvetica Neue", sans-serif;
     font-weight: 400;
     font-size: 20px;
     line-height: 1.45;
     letter-spacing: -0.005em;
-    color: #444;
-    margin: 0 0 36px;
-    max-width: 680px;
+    color: rgba(255,255,255,0.92);
+    margin: 0;
+    max-width: 720px;
     font-feature-settings: "kern" 1, "liga" 1;
     text-rendering: optimizeLegibility;
+    text-shadow: 0 1px 12px rgba(0,0,0,0.45);
+  }
+  .image-credit {
+    position: absolute;
+    bottom: 12px;
+    right: 16px;
+    z-index: 2;
+    font-family: "Inter", sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+  }
+
+  /* Article meta block under cover */
+  .meta-strip {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 28px 32px 0;
   }
 
   /* Forbes-style author block */
@@ -349,25 +405,29 @@
   article.body strong { font-weight: 700; }
   article.body em { font-style: italic; }
 
-  /* Forbes-style hero image */
+  /* Above-the-fold full-bleed hero image */
   .hero-image {
-    max-width: 1200px;
-    margin: 24px auto 48px;
-    padding: 0 32px;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background: #1a1a1a;
   }
   .hero-image img {
     width: 100%;
     height: auto;
+    max-height: 78vh;
+    object-fit: cover;
     display: block;
-    background: #f0ede4;
+    background: linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 100%);
   }
   .hero-image figcaption {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 12px 32px 0;
     font-family: "Inter", sans-serif;
     font-size: 13px;
     line-height: 1.5;
     color: var(--muted);
-    margin-top: 12px;
-    padding-bottom: 4px;
   }
   .hero-image figcaption strong {
     color: var(--ink);
@@ -382,8 +442,8 @@
     margin-left: 8px;
   }
   @media (max-width: 700px) {
-    .hero-image { padding: 0 20px; margin-bottom: 32px; }
-    .hero-image figcaption { font-size: 12px; }
+    .hero-image img { max-height: 60vh; }
+    .hero-image figcaption { padding: 10px 20px 0; font-size: 12px; }
   }
   article.body a {
     color: var(--ink);
@@ -557,11 +617,14 @@
     .topbar { padding: 10px 16px; }
     .topbar nav { font-size: 9.5px; }
     .masthead { font-size: 18px; }
-    .hero { padding: 36px 20px 28px; }
-    h1 { font-size: 36px; letter-spacing: -0.03em; }
-    .deck { font-size: 17px; }
+    .cover { min-height: 70vh; }
+    .cover-inner { padding: 40px 20px 36px; }
+    .cover h1 { font-size: 38px; letter-spacing: -0.03em; }
+    .cover .deck { font-size: 16px; }
     .breadcrumb { font-size: 10px; letter-spacing: 0.12em; margin-bottom: 18px; }
     .breadcrumb .sep { margin: 0 6px; }
+    .image-credit { writing-mode: horizontal-tb; transform: none; bottom: auto; top: 12px; right: 12px; font-size: 9px; }
+    .meta-strip { padding: 24px 20px 0; }
     .author-block { gap: 12px; flex-wrap: wrap; }
     .avatar { width: 40px; height: 40px; font-size: 15px; }
     .meta-right { margin-left: 0; text-align: left; flex-basis: 100%; padding-top: 8px; border-top: 1px solid var(--rule); }
@@ -585,21 +648,25 @@
     <nav>Investigations · Wasatch Back</nav>
   </div>
 
-  <header class="hero">
-    <div class="breadcrumb">
-      <span class="live">● Investigation</span>
-      <span class="sep">/</span>
-      <span>Surveillance &amp; Accountability</span>
-      <span class="sep">/</span>
-      <span>Park City</span>
+  <header class="cover">
+    <img class="cover-img" src="hero.jpg" alt="" onerror="this.style.display='none';">
+    <div class="cover-inner">
+      <div class="breadcrumb">
+        <span class="live">● Investigation</span>
+        <span class="sep">/</span>
+        <span>Surveillance &amp; Accountability</span>
+        <span class="sep">/</span>
+        <span>Park City</span>
+      </div>
+      <h1>Is Park City Flocked?</h1>
+      <div class="deck">
+        At least twenty-six automated license plate readers form a perimeter around the basin. Eight sit inside Park City's corporate limits. The published policies that govern them contain language the Utah Privacy Office has already flagged as exceeding state law. The system itself is acknowledged in one sentence in one sole-source procurement waiver, signed by a captain in February 2025.
+      </div>
     </div>
+    <div class="image-credit">Photo by Hawk Mikado / The Real McCoy</div>
+  </header>
 
-    <h1>Is Park City Flocked?</h1>
-
-    <div class="deck">
-      At least twenty-six automated license plate readers form a perimeter around the basin. Eight sit inside Park City's corporate limits. The published policies that govern them contain language the Utah Privacy Office has already flagged as exceeding state law. The system itself is acknowledged in one sentence in one sole-source procurement waiver, signed by a captain in February 2025.
-    </div>
-
+  <div class="meta-strip">
     <div class="author-block">
       <div class="avatar">HM</div>
       <div class="author-info">
@@ -611,7 +678,6 @@
         <div class="updated">Updated Apr 26, 2026, 11:48pm MDT</div>
       </div>
     </div>
-
     <div class="share-row">
       <span class="read-time">~14 min read</span>
       <div class="share-links">
@@ -619,7 +685,7 @@
         <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fthe-real-mccoy.vercel.app&text=Is%20Park%20City%20Flocked%3F" target="_blank">Share</a>
       </div>
     </div>
-  </header>
+  </div>
 
   <figure class="hero-image">
     <img src="hero.jpg" alt="Hero image — Park City surveillance investigation" onerror="this.style.aspectRatio='16/9';this.style.background='linear-gradient(135deg,#1a1a1a 0%,#3a3a3a 100%)';this.removeAttribute('src');this.alt='Hero image placeholder — drop hero.jpg into the repo root to replace.';">
