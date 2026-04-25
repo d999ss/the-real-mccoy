@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Is Park City Flocked? — An Investigation</title>
+<meta name="description" content="Twenty automated license plate readers form a perimeter around the Park City basin. Eight sit inside city limits. Park City Police acknowledged operating the system in a single sentence inside a 2025 procurement waiver.">
+<meta name="author" content="Hawk Mikado">
+
+<!-- Open Graph -->
+<meta property="og:type" content="article">
+<meta property="og:title" content="Is Park City Flocked?">
+<meta property="og:description" content="Twenty ALPR cameras around the basin. Eight inside Park City. The only public acknowledgment is one sentence in a 2025 procurement waiver.">
+<meta property="og:site_name" content="The Dispatch">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Is Park City Flocked?">
+<meta name="twitter:description" content="Twenty ALPR cameras around the basin. Eight inside Park City. The only public acknowledgment is one sentence in a 2025 procurement waiver.">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23D2A62C'/%3E%3Ctext x='50' y='68' font-family='Georgia,serif' font-size='62' font-weight='700' fill='%231a1a1a' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --paper: #ffffff;
+    --rule: #e5e5e5;
+    --rule-dark: #1a1a1a;
+    --muted: #6b6b6b;
+    --link: #b51d24;
+    --accent: #D2A62C;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Spectral", "Iowan Old Style", "Charter", "Georgia", serif;
+    font-size: 19px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .topbar {
+    border-bottom: 1px solid var(--rule);
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: "Inter", -apple-system, sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+  .masthead {
+    font-family: "Spectral", serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+  }
+  .topbar nav {
+    color: var(--muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 11px;
+  }
+  .hero {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 64px 32px 48px;
+    text-align: left;
+  }
+  .rubric {
+    font-family: "Inter", sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--link);
+    font-weight: 700;
+    margin-bottom: 28px;
+  }
+  h1 {
+    font-family: "Spectral", "Iowan Old Style", "Georgia", serif;
+    font-weight: 700;
+    font-size: 64px;
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    margin: 0 0 28px;
+    color: var(--ink);
+  }
+  .deck {
+    font-family: "Spectral", serif;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 1.4;
+    color: #333;
+    margin: 0 0 40px;
+    max-width: 640px;
+  }
+  .byline-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    font-family: "Inter", sans-serif;
+    font-size: 13px;
+  }
+  .byline-row .by {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink);
+  }
+  .byline-row .author { font-weight: 700; color: var(--ink); }
+  .byline-row .date { color: var(--muted); margin-left: auto; font-weight: 500; }
+
+  .lede-figure {
+    max-width: 1080px;
+    margin: 24px auto 56px;
+    padding: 0 32px;
+  }
+  #map {
+    width: 100%;
+    aspect-ratio: 16/10;
+    background: #f7f5f0;
+    position: relative;
+  }
+  .leaflet-container {
+    font-family: "Inter", sans-serif !important;
+    font-size: 12px;
+  }
+  .cam-dot {
+    background: var(--accent);
+    border: 2px solid #1a1a1a;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(210,166,44,0.25);
+  }
+  .cam-dot.motorola {
+    background: #b51d24;
+    box-shadow: 0 0 0 3px rgba(181,29,36,0.22);
+  }
+  .map-legend {
+    position: absolute;
+    bottom: 14px; left: 14px;
+    background: rgba(255,255,255,0.95);
+    padding: 10px 14px;
+    border: 1px solid #1a1a1a;
+    font-family: "Inter", sans-serif;
+    font-size: 11px;
+    line-height: 1.7;
+    z-index: 500;
+    letter-spacing: 0.02em;
+  }
+  .map-legend .swatch {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    border: 1.5px solid #1a1a1a;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  .map-legend .swatch.gold { background: var(--accent); }
+  .map-legend .swatch.red { background: #b51d24; }
+  .map-legend strong {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    border-bottom: 1px solid #1a1a1a;
+    padding-bottom: 4px;
+  }
+  .lede-figure figcaption {
+    font-family: "Inter", sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 14px;
+    line-height: 1.5;
+  }
+  .lede-figure figcaption strong { color: var(--ink); font-weight: 600; }
+
+  article.body {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 32px 96px;
+  }
+  article.body p {
+    margin: 0 0 26px;
+    font-size: 19px;
+    line-height: 1.7;
+  }
+  .lede-para::first-letter {
+    font-family: "Spectral", serif;
+    font-weight: 700;
+    font-size: 88px;
+    float: left;
+    line-height: 0.85;
+    margin: 8px 12px -4px 0;
+    color: var(--ink);
+  }
+  article.body h2 {
+    font-family: "Spectral", serif;
+    font-size: 28px;
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 56px 0 24px;
+    color: var(--ink);
+  }
+  article.body h2::before {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 2px;
+    background: var(--ink);
+    margin-bottom: 24px;
+  }
+  article.body ul {
+    padding-left: 0;
+    list-style: none;
+    margin: 0 0 30px;
+  }
+  article.body ul li {
+    padding: 10px 0 10px 22px;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+    font-size: 18px;
+    line-height: 1.55;
+  }
+  article.body ul li:first-child { border-top: 1px solid var(--rule); }
+  article.body ul li::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 22px;
+    width: 8px; height: 1px;
+    background: var(--accent);
+  }
+  article.body strong { font-weight: 700; }
+  article.body em { font-style: italic; }
+  article.body a {
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(181, 29, 36, 0.45);
+    transition: border-color 0.15s, background 0.15s;
+  }
+  article.body a:hover {
+    border-bottom-color: var(--link);
+    background: rgba(210, 166, 44, 0.12);
+  }
+  article.body blockquote.pull a {
+    border-bottom-color: rgba(210, 166, 44, 0.6);
+  }
+  article.body table.spend a { color: var(--link); border-bottom: none; }
+  blockquote.pull {
+    font-family: "Spectral", serif;
+    font-size: 32px;
+    font-style: italic;
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--ink);
+    margin: 48px -20px;
+    padding: 32px 0;
+    border-top: 1px solid var(--rule-dark);
+    border-bottom: 1px solid var(--rule-dark);
+    text-align: center;
+    letter-spacing: -0.005em;
+  }
+  blockquote.pull::before {
+    content: "“";
+    font-family: "Spectral", serif;
+    font-size: 64px;
+    line-height: 0;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 20px;
+  }
+  .closer {
+    font-family: "Spectral", serif;
+    font-style: italic;
+    font-size: 22px;
+    line-height: 1.45;
+    color: var(--ink);
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 2px solid var(--ink);
+  }
+
+  /* Data table inside article */
+  table.spend {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 32px;
+    font-family: "Inter", sans-serif;
+    font-size: 14px;
+  }
+  table.spend caption {
+    text-align: left;
+    font-family: "Inter", sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--link);
+    font-weight: 700;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule-dark);
+  }
+  table.spend th {
+    text-align: left;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+    padding: 8px 12px 8px 0;
+    border-bottom: 1px solid var(--rule-dark);
+  }
+  table.spend td {
+    padding: 10px 12px 10px 0;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink);
+  }
+  table.spend td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  table.spend tr:last-child td { border-bottom: 2px solid var(--rule-dark); }
+
+  /* Sources */
+  .sources {
+    background: #f7f5f0;
+    padding: 64px 0 80px;
+    border-top: 1px solid var(--rule);
+    margin-top: 64px;
+  }
+  .sources-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+  .sources-inner .section-label {
+    font-family: "Inter", sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--link);
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .sources-inner h2 {
+    font-family: "Spectral", serif;
+    font-size: 36px;
+    line-height: 1.15;
+    font-weight: 700;
+    margin: 0 0 18px;
+    letter-spacing: -0.015em;
+  }
+  .sources-inner > p.intro {
+    font-family: "Spectral", serif;
+    font-size: 18px;
+    line-height: 1.55;
+    color: #333;
+    margin: 0 0 40px;
+    max-width: 620px;
+  }
+  .sources-inner h3 {
+    font-family: "Inter", sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 36px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #d3cfbf;
+  }
+  .sources-inner ul {
+    padding-left: 18px;
+    margin: 0;
+    font-family: "Inter", sans-serif;
+    font-size: 13.5px;
+    line-height: 1.65;
+  }
+  .sources-inner li { margin-bottom: 8px; word-break: break-word; }
+  .sources-inner a {
+    color: var(--link);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(181,29,36,0.3);
+  }
+  .sources-inner a:hover { border-bottom-color: var(--link); }
+  .sources-inner code {
+    font-family: "SF Mono", "Menlo", "Consolas", monospace;
+    font-size: 12px;
+    background: #ece7d4;
+    padding: 1px 6px;
+    border-radius: 2px;
+  }
+
+  footer.colophon {
+    text-align: center;
+    padding: 40px 32px 60px;
+    font-family: "Inter", sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-top: 1px solid var(--rule);
+  }
+  footer.colophon strong { color: var(--ink); font-weight: 700; }
+
+  @media (max-width: 700px) {
+    .topbar { padding: 12px 20px; }
+    .hero { padding: 40px 20px 32px; }
+    h1 { font-size: 40px; }
+    .deck { font-size: 19px; }
+    article.body { padding: 0 20px 64px; }
+    article.body p { font-size: 18px; }
+    article.body h2 { font-size: 24px; }
+    blockquote.pull { font-size: 24px; margin: 36px 0; }
+    .lede-figure { padding: 0 20px; margin-bottom: 40px; }
+    .sources-inner { padding: 0 20px; }
+    .sources-inner h2 { font-size: 28px; }
+    table.spend { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="masthead">The Dispatch</div>
+    <nav>Investigation · April 2026 · v5</nav>
+  </div>
+
+  <header class="hero">
+    <div class="rubric">An Investigation · Updated</div>
+    <h1>Is Park City Flocked?</h1>
+    <div class="deck">
+      Twenty automated license plate readers form a perimeter around the basin. Eight sit inside Park City's corporate limits. Park City Police has a published policy that names no vendor and locates no camera. The system itself is acknowledged in one sentence in one sole-source procurement waiver, signed by a captain in February 2025.
+    </div>
+    <div class="byline-row">
+      <span class="by">By</span>
+      <span class="author">Hawk Mikado</span>
+      <span class="date">April 26, 2026 · v5</span>
+    </div>
+  </header>
+
+  <figure class="lede-figure">
+    <div id="map" aria-label="Map of mapped ALPR locations around Park City basin">
+      <div class="map-legend">
+        <strong>Mapped ALPR cameras</strong>
+        <div><span class="swatch gold"></span>Flock Safety <span>(18)</span></div>
+        <div><span class="swatch red"></span>Motorola / Vigilant <span>(2)</span></div>
+      </div>
+    </div>
+    <figcaption><strong>Twenty ALPR cameras in and around Park City, Utah</strong>, derived from OpenStreetMap surveillance node data. The cluster covers every major route into and out of the basin: I-80, US-40, SR-224, and the Deer Valley corridors. Click any marker for vendor and OSM source. <em>Pulled 2026-04-25 via Overpass API.</em></figcaption>
+  </figure>
+
+  <script>
+    const cameras = [
+      {lat: 40.68149, lon: -111.46555, vendor: "Flock Safety",        dir: 204, mount: "sign", id: 12779086893},
+      {lat: 40.64606, lon: -111.49491, vendor: "Flock Safety",        dir: 307, mount: "pole", id: 12779115628},
+      {lat: 40.64827, lon: -111.49742, vendor: "Flock Safety",        dir: 139, mount: "pole", id: 12779115629},
+      {lat: 40.66819, lon: -111.48763, vendor: "Flock Safety",        dir: 76,  mount: "sign", id: 12779115630},
+      {lat: 40.62061, lon: -111.49230, vendor: "Flock Safety",        dir: 265, mount: "pole", id: 12779115824},
+      {lat: 40.68295, lon: -111.53579, vendor: "Flock Safety",        dir: 300, mount: "pole", id: 12783977497},
+      {lat: 40.68075, lon: -111.53177, vendor: "Flock Safety",        dir: 114, mount: "pole", id: 12783977498},
+      {lat: 40.71942, lon: -111.48466, vendor: "Motorola Solutions",  dir: 327, mount: "—",    id: 12790967629},
+      {lat: 40.75250, lon: -111.57302, vendor: "Flock Safety",        dir: 168, mount: "pole", id: 12791883417},
+      {lat: 40.68450, lon: -111.43211, vendor: "Motorola Solutions",  dir: 180, mount: "—",    id: 13472327391},
+      {lat: 40.69450, lon: -111.46897, vendor: "Flock Safety",        dir: 61,  mount: "—",    id: 13511589601},
+      {lat: 40.68440, lon: -111.45904, vendor: "Flock Safety",        dir: 301, mount: "—",    id: 13511602401},
+      {lat: 40.80902, lon: -111.40758, vendor: "Flock Safety",        dir: "359;177", mount: "—", id: 13511604302},
+      {lat: 40.75244, lon: -111.61435, vendor: "Flock Safety",        dir: 208, mount: "—",    id: 13511614601},
+      {lat: 40.72587, lon: -111.54738, vendor: "Flock Safety",        dir: 268, mount: "—",    id: 13511638101},
+      {lat: 40.73931, lon: -111.67260, vendor: "Flock Safety",        dir: 106, mount: "—",    id: 13511638301},
+      {lat: 40.72103, lon: -111.52099, vendor: "Flock Safety",        dir: "260;64", mount: "—", id: 13511640901},
+      {lat: 40.67885, lon: -111.52693, vendor: "Flock Safety",        dir: "292;128", mount: "—", id: 13513743901},
+      {lat: 40.66730, lon: -111.49465, vendor: "Flock Safety",        dir: "66;246", mount: "—", id: 13513744201},
+      {lat: 40.60778, lon: -111.57979, vendor: "Flock Safety",        dir: 0,   mount: "—",    id: 13563532701},
+    ];
+    const map = L.map('map', { zoomControl: true, scrollWheelZoom: false });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 19,
+    }).addTo(map);
+    const bounds = L.latLngBounds([]);
+    cameras.forEach(c => {
+      const isMotorola = c.vendor.toLowerCase().includes('motorola');
+      const className = 'cam-dot' + (isMotorola ? ' motorola' : '');
+      const icon = L.divIcon({ className: className, iconSize: [14, 14], iconAnchor: [7, 7] });
+      const popup = `<strong>${c.vendor}</strong><br>${c.lat.toFixed(5)}, ${c.lon.toFixed(5)}<br>Direction: ${c.dir}°<br>Mount: ${c.mount}<br><a href="https://www.openstreetmap.org/node/${c.id}" target="_blank">OSM node ${c.id}</a>`;
+      L.marker([c.lat, c.lon], {icon}).addTo(map).bindPopup(popup);
+      bounds.extend([c.lat, c.lon]);
+    });
+    map.fitBounds(bounds, {padding: [40, 40]});
+  </script>
+
+
+  <article class="body">
+
+    <p class="lede-para">For two years, no Park City official said in public that the police department operated a license plate reader. Then, in one sentence buried in a routine procurement notice, the department said it.</p>
+
+    <p>The notice was titled <a href="https://parkcity.gov/Home/Components/RFP/RFP/15864/2339">"Command Central Evidence Plus and WatchGuard Cloud Storage Solution"</a>. It was filed on February 6, 2025, signed by a <a href="https://www.parkrecord.com/2023/10/09/the-captains-rank/">captain named Rob McKinney</a>, and posted to the city's RFP portal for a seven-day comment window. The justification asked the city council to waive competitive bidding and award $78,754 to Motorola, because Motorola was the only vendor that integrated with the systems Park City Police already had. Among those existing systems, the notice listed:</p>
+
+    <blockquote class="pull"><a href="https://parkcity.gov/Home/Components/RFP/RFP/15864/2339">"This software would also allow PCPD to integrate their current license plate reader system, Motorola Vigilante [sic], to better share information."</a></blockquote>
+
+    <p>One sentence. A year ago. Public.</p>
+
+    <p>It has been there since.</p>
+
+    <h2>The perimeter</h2>
+
+    <p>A geospatial review of <a href="https://overpass.kumi.systems/api/interpreter">public mapping data</a>, pulled from <a href="https://www.openstreetmap.org/">OpenStreetMap</a> on April 26, 2026, identifies twenty automated license plate readers positioned around the Park City basin. Eighteen are tagged Flock Safety. Two are tagged Motorola Solutions, the parent company of the Vigilant platform Park City Police acknowledged owning. They sit on poles along I-80 and US-40, near roundabouts and resort turnoffs, pointed at traffic flowing in and out of the Wasatch Back. Some are <a href="https://www.openstreetmap.org/node/12783977497">paired</a>, spaced just far enough apart to capture vehicles in both directions. Others are mounted at choke points where every driver must pass.</p>
+
+    <p>Eight of the twenty sit inside Park City's corporate limits. The figure comes from a point-in-polygon check against <a href="https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahMunicipalBoundaries/FeatureServer/0/query?where=NAME%3D%27PARK+CITY%27&f=geojson&outFields=*">the State of Utah's authoritative municipal boundary file</a>, published by the Utah Automated Geographic Reference Center. The cameras appear along SR-224, Deer Valley Drive, the Empire Pass corridor, and the southern annexed pockets toward Quinn's Junction.</p>
+
+    <p>Eight cameras in a city of 8,500 people, in a basin with one police department, two county sheriff's offices, and a state-level development authority — and almost no record, anywhere, of who paid for them.</p>
+
+    <h2>The omission</h2>
+
+    <p>One month before the procurement notice, Park City Police published its <a href="https://parkcity.gov/home/showpublisheddocument/77276/638962019925570000">2024 Annual Report</a> — a 22-page public document directed at the community. The report lists the department's technology stack: body cameras, in-car cameras, communications equipment, an Unmanned Aerial System program, the records-management partnership with the Spillman platform, the partnership with the Utah Statewide Intelligence and Analysis Center.</p>
+
+    <p>It does not mention the license plate reader system. The phrase "license plate" appears nowhere in the document. Captain McKinney, who signed the procurement notice in February, is named in the report as one of the bureau commanders responsible for the police budget.</p>
+
+    <p>The City's <a href="https://parkcity.gov/departments/budget-debt-grants/budget-document-archive">FY2025 budget book</a> — Volume I and Volume II combined, more than 30,000 lines — names automated license plate recognition systems exactly twice. Both references appear in the Parking section, describing technology improvements after parking enforcement was brought in-house. Park City has a parking ALPR program disclosed openly in its operating budget. The police program is disclosed only in a sole-source waiver, by accident, in a sentence that reads as if it were already common knowledge.</p>
+
+    <h2>The money, half visible</h2>
+
+    <p>The state's <a href="https://transparent.utah.gov/">transparency website</a> tells two stories about how Park City–region agencies have paid for license plate readers.</p>
+
+    <p>The first story is in plain language. Wasatch County paid <a href="https://transparent.utah.gov/vendet.php">Vigilant Solutions $100,000 in fiscal year 2023</a>. Summit County paid <a href="https://transparent.utah.gov/vendet.php">Vigilant Solutions LLC $10,280 the same year</a>. Both records appear in Transparent Utah under the vendor name itself. They are the only direct ALPR-vendor payments by any of the four agencies operating in the Park City basin — and they are consistent with the two Motorola/Vigilant cameras visible on the OSM map, at Kimball Junction and East Jordanelle.</p>
+
+    <p>The second story is the eighteen Flock Safety cameras.</p>
+
+    <p>Park City Police, Summit County Sheriff, and Wasatch County Sheriff have collectively paid Flock Safety, Flock Group Inc, or any other Flock-branded vendor a total of zero dollars across six fiscal years. <a href="https://transparent.utah.gov/vendet.php">Heber City Police is the lone exception: $24,000 in FY2026</a>, the first appearance of any Flock payment in the region. <a href="https://www.heberut.gov/151/Police">The Heber City Police Department</a> has not published an ALPR policy, in apparent violation of <a href="https://le.utah.gov/xcode/Title41/Chapter6A/C41-6a-P20_1800010118000101.pdf">Utah Code § 41-6a-2003(2)(a)</a>.</p>
+
+    <p>What Park City has paid, in growing amounts, is <a href="https://ips.insight.com/en_US/public-sector.html">Insight Public Sector</a>.</p>
+
+    <table class="spend">
+      <caption>Park City payments to Insight Public Sector, FY2021–FY2026</caption>
+      <thead><tr><th>Fiscal year</th><th class="num">Amount</th></tr></thead>
+      <tbody>
+        <tr><td>FY2021</td><td class="num">$66,085</td></tr>
+        <tr><td>FY2022</td><td class="num">$76,203</td></tr>
+        <tr><td>FY2023</td><td class="num">$114,594</td></tr>
+        <tr><td>FY2024</td><td class="num">$130,570</td></tr>
+        <tr><td>FY2025</td><td class="num">$169,675</td></tr>
+        <tr><td>FY2026 (partial)</td><td class="num">$21,997</td></tr>
+        <tr><td><strong>Total</strong></td><td class="num"><strong>$579,125</strong></td></tr>
+      </tbody>
+    </table>
+
+    <p>The annual figure grew 2.5× in four years. Across the same period, Park City paid CDW Government — another large IT distributor — more than $2.59 million. Summit County, Wasatch County, and Heber City together paid the same two vendors more than $1.5 million additional.</p>
+
+    <p>Insight Enterprises (NASDAQ: NSIT) is a Fortune 500 IT distributor with <a href="https://investor.insight.com/news-releases/news-release-details/2025/Insight-Enterprises-Inc.-Reports-Fourth-Quarter-and-Full-Year-Results/">$8.70 billion in revenue in 2024</a>. Its public-sector arm holds cooperative-purchasing contracts with OMNIA Partners, Sourcewell, NASPO ValuePoint, and the federal GSA. Through those contracts, a single Insight invoice line can include Microsoft Office licenses, Cisco networking gear, Dell laptops, cloud storage, professional services — and a Flock Safety subscription. Flock's own <a href="https://www.omniapartners.com/suppliers-files/E-J/Flock_Safety/Contract_Documents/R250203/5_29_2025_Flock_Safety_Omnia__R250203_Price_List.pdf">published price list</a> under <a href="https://www.omniapartners.com/suppliers/flock-safety/public-sector/contract-documents">OMNIA contract R250203</a>, in effect from April 2025 through March 2028, names Insight Public Sector and CDW Government as authorized resellers.</p>
+
+    <p>For the buyer, the structure is convenient: one vendor relationship, one approved contract, one invoice. For the public record, the structure is opaque by construction. A purchase that, made directly from Flock, would appear in Transparent Utah as "Flock Group Inc DBA Flock Safety" appears instead as "Insight Public Sector, Inc." — indistinguishable, at the line-item level visible to the public, from a software-license renewal.</p>
+
+    <blockquote class="pull">A Flock subscription bought through a reseller appears in the public record as routine IT spend.</blockquote>
+
+    <p>This is not proof that any specific Park City payment funded a Flock camera. It is proof that the public record is structured in a way that would not surface such a payment if it occurred. The line items live inside the agencies' purchase orders and invoices — records that Utah's transparency law obligates the city to disclose on request, but not to publish.</p>
+
+    <h2>The policy, late or absent</h2>
+
+    <p>Utah law requires every agency operating an ALPR system to publish a usage policy on a public website. The requirement was strengthened in 2025 by <a href="https://le.utah.gov/~2025/bills/static/HB0468.html">HB 468</a>, which took effect May 7, 2025, and the <a href="https://le.utah.gov/xcode/Title41/Chapter6A/C41-6a-P20_1800010118000101.pdf">Automatic License Plate Reader System Act</a>. The act also imposes annual reporting to the Utah Commission on Criminal and Juvenile Justice.</p>
+
+    <p>Each of the four agencies operating in the Park City basin has a published ALPR policy somewhere — but the policies themselves are nearly identical Lexipol templates and disclose almost nothing about what the agencies actually operate.</p>
+
+    <p>Park City Police Department has <a href="https://parkcity.gov/home/showpublisheddocument/68749/638495489747270000">Policy 429, "Automated License Plate Readers (ALPRs)"</a>, in its Lexipol-managed policy manual, with a revision date of April 23, 2024. The policy is on page 359 of a 704-page document. It is procedurally compliant. It is also vendor-anonymous: it does not name Motorola Vigilant, the system the department subsequently acknowledged operating in its February 2025 sole-source procurement waiver. It does not identify a single camera location. It does not list the agencies the department shares data with. The substantive disclosure required to meaningfully inform the public — what system, where, accessed by whom, retained how long — is in none of those documents. It is in one sentence in one procurement notice signed by one captain.</p>
+
+    <p>Wasatch County Sheriff's Office has <a href="https://www.wasatchsheriff.gov/policies-2/policy-427">Policy 427</a>, dated December 12, 2023 — the most prominently posted of the four, and the most clearly customized to the agency. Summit County Sheriff's Office has <a href="https://www.summitcountyutah.gov/DocumentCenter/View/26532/Automated_License_Plate_Readers__ALPRs_">Policy 460</a> in the county's document portal. The Lexipol footer carries a copyright date of February 10, 2026; the document itself does not include an adoption record, sheriff's order, or county council resolution showing when the policy was actually adopted by Summit County. Several sections of the posted document still contain unfilled Lexipol placeholders — "[Department/Office] personnel" rather than "Summit County Sheriff's Office personnel" — suggesting it was uploaded without final customization. <a href="https://www.heberut.gov/151/Police">No ALPR policy is publicly findable on the Heber City Police Department's website</a>; the Dispatch has filed a public-records request seeking the policy or written confirmation that none exists.</p>
+
+    <p>Summit County's policy includes a self-imposed transparency clause that goes beyond the statute: the policy and any UDOT Special Use Permits obtained for stationary ALPRs are to be published on the county website or on the <a href="https://www.utah.gov/pmn/index.html">Utah Public Notice Website</a>. A direct check of the Utah Public Notice Website on April 26, 2026 returned no ALPR Special Use Permits for Summit County. The promise is on paper. The publication has not happened.</p>
+
+    <p>Flock Safety also offers each customer agency the option to enable a public transparency portal at <a href="https://transparency.flocksafety.com/"><code>transparency.flocksafety.com</code></a> showing camera counts, search statistics, and data-sharing partners. None of the four agencies have enabled portals. Direct checks of every plausible URL slug return HTTP 403.</p>
+
+    <h2>The brackets they forgot to fill in</h2>
+
+    <p>Lexipol, the private company that supplies most Utah law-enforcement policy manuals, ships its templates with placeholder text in square brackets — literal blanks the subscribing agency is supposed to overwrite with its own name before the policy is adopted. <code>[Department/Office]</code>. <code>[Chief/Sheriff]</code>. <code>[department/office] personnel</code>. The brackets are there so the customizer knows where to type.</p>
+
+    <p>The version of <a href="https://www.summitcountyutah.gov/DocumentCenter/View/26532/Automated_License_Plate_Readers__ALPRs_">Policy 460</a> currently posted on Summit County's document portal — the only ALPR policy the agency has made public — reads, verbatim:</p>
+
+    <blockquote class="pull"><a href="https://www.summitcountyutah.gov/DocumentCenter/View/26532/Automated_License_Plate_Readers__ALPRs_">"No member of this [department/office] shall operate ALPR equipment or access ALPR data without first completing [department/office]-approved training."</a></blockquote>
+
+    <p>The brackets are in the original. So is the rest of the boilerplate: <em>"Use of an ALPR is restricted to the purposes outlined below. [Department/Office] personnel shall not use or allow others to use the equipment…"</em> <em>"No ALPR operator may access confidential [department/office], state, or federal data unless otherwise authorized to do so."</em></p>
+
+    <p>The policy that supposedly governs the conduct of every Summit County deputy does not, on its own terms, say which department or office it governs. The brackets remained because no one filled them in.</p>
+
+    <p>The pattern is consistent with the document's other tells. The Lexipol footer date is February 10, 2026 — within weeks of the Reddit thread that put the cameras into local conversation. The document contains no sheriff's order, no county council resolution, and no internal adoption record. There is no published audit log. There is no published Special Use Permit, despite the policy itself promising both.</p>
+
+    <p>What Summit County uploaded is not a policy. It is a screenshot of the absence of one.</p>
+
+    <h2>The permit choke point</h2>
+
+    <p>Cameras installed within the right-of-way of a state highway require a Special Use Permit from the Utah Department of Transportation. According to <a href="https://connect.udot.utah.gov/business/permits/license-plate-reader/">UDOT's own published guidance</a>:</p>
+
+    <blockquote class="pull"><a href="https://connect.udot.utah.gov/business/permits/license-plate-reader/">"Only one ALPRS Special Use Permit is required for each municipality. Multiple ALPRS may be installed within the law enforcement's jurisdiction using the approved ALPRS Special Use Permit."</a></blockquote>
+
+    <p>One permit per agency. Any number of cameras. Applications submitted by email to a UDOT inbox, not through any public portal. There is no published list of which agencies have applied or been approved.</p>
+
+    <p>UDOT does maintain a <a href="https://central.udot.utah.gov/server/rest/services/ROW/Permits/MapServer">public ArcGIS database</a> of every encroachment permit — the second permit required for any actual construction work in state right-of-way. We pulled all 1,425 encroachment permits in the Park City basin. Across applicant name, contractor, beneficiary, and full purpose text, not one mentions Flock, Motorola, Vigilant, ALPR, license plate, or plate reader. The construction work, when it happens, is filed under generic infrastructure language.</p>
+
+    <p>One 2019 record demonstrates the precedent. <a href="https://central.udot.utah.gov/server/rest/services/ROW/Permits/MapServer">UDOT permit 91070</a>, sponsored by a Park City staff member and issued to the Salt Lake City data company <a href="https://blyncsy.com/">Blyncsy</a>, authorized the installation of "traffic monitoring sensors around the area of the Snyderville Basin to provide volumes and origin and destination information for the county dashboard." The original system used cellular and Bluetooth tracking, not plate readers. But Blyncsy is now a <a href="https://www.rekor.ai/partners/blyncsy">documented partner of Rekor</a>, one of Flock's main competitors. The infrastructure pathway from "transit data sensor" to "license plate reader" is a single contract amendment.</p>
+
+    <p>That precedent matters now. In April 2026, UDOT and High Valley Transit broke ground on the <a href="https://www.hvtutah.gov/sr224-brt">SR-224 Bus Rapid Transit project</a>, with <a href="https://www.parkrecord.com/2025/02/26/high-valley-transit-awards-s-r-224-bus-rapid-transit-contract-to-stacy-and-witbeck-inc/">Stacy and Witbeck Inc.</a> as the prime contractor. New conduit, new poles, new electrical infrastructure — installed along the corridor where Flock cameras have been organically appearing for two years.</p>
+
+    <h2>The community got there first</h2>
+
+    <p>The cameras are not a secret. Park City residents have been documenting them for more than a year.</p>
+
+    <p>The OpenStreetMap deployment record makes the timing precise. Between April 23 and April 27, 2025, a user named Ferrett documented nine ALPR cameras in the Park City and Heber Valley corridors — the first formal record of the perimeter. Then nine months of silence. On January 25, 2026, a post on the r/ParkCity subreddit titled <a href="https://www.reddit.com/r/ParkCity/comments/1qm6hi6/flock_cameras_in_park_city/">"Flock cameras in Park City"</a> drew 126 upvotes and 82 comments. The author identified Flock devices on SR-224 and SR-248 entering town, described the AI features — make, model, occupant count, identifying stickers — and pointed neighbors to <a href="https://deflock.org/">DeFlock.org</a>. Five days later, a user named Tommy Tran began a second mapping wave: ten cameras between January 30 and 31, all imported through the DeFlock crowdsourcing app. A final camera was added on February 14.</p>
+
+    <p>Two waves. Four mappers. Twenty cameras. The agencies issued no parallel disclosure during either wave.</p>
+
+    <p>By April 2026, the cameras had entered casual local conversation as an assumed part of the policing toolkit. In a Reddit thread about <a href="https://www.reddit.com/r/ParkCity/comments/1sqqdwt/manhunt_underway_after_domestic_dispute_led_to/">a manhunt in Summit County</a>, a top comment asked: "WTH are we paying for drones, training, thermal tech, Flock cameras etc.. when dangerous felons simply stroll away from these Keystone Kops?"</p>
+
+    <h2>The Mayflower question</h2>
+
+    <p>South of Park City, the surveillance ring crosses into a different governance regime.</p>
+
+    <p>The Mayflower Mountain Resort area, where four of the twenty mapped cameras cluster, sits inside a <a href="https://www.midaut.org/">Military Installation Development Authority project area</a>. MIDA is a state-level entity created by the Utah Legislature in 2007. It has its own board, its own contracting authority, and its own tax-increment financing mechanism that routes development around standard county procurement. <a href="https://www.parkrecord.com/2023/10/31/wasatch-county-places-a-bet-with-mida-and-still-gets-some-tax-revenue-in-the-deal/">MIDA, Wasatch County, and Extell Development executed a three-way agreement governing the Mayflower buildout in 2023</a>.</p>
+
+    <p>The Wasatch County Sheriff has jurisdiction over the project area. The Sheriff has Policy 427 on its website, no Flock spending in the public record, and at least four Flock cameras in territory the agreement governs. Whether MIDA or Extell installed those cameras and granted the Sheriff query access in lieu of the Sheriff buying its own is the most plausible explanation for the gap. The agreement that would prove or disprove it is not public.</p>
+
+    <h2>What the gap enables</h2>
+
+    <p>The disclosure failures are not procedural. They map directly onto the four categories of harm Utah's ALPR statute was written to prevent.</p>
+
+    <p><strong>Warrantless long-term tracking tied to a person.</strong> <a href="https://le.utah.gov/xcode/Title41/Chapter6A/C41-6a-P20_1800010118000101.pdf">Utah Code § 41-6a-2005(2)</a> limits ALPR queries to those supported by reasonable suspicion of relevance to a criminal investigation. Without a published policy that codifies the reasonable-suspicion standard internally, and without query logs available for outside review, the line between targeted lookup and continuous tracking of an identifiable individual becomes invisible. A networked ALPR system can reconstruct a person's movements across weeks or months — every entry into the basin, every drive past Deer Valley, every late-night return on US-40 — from data captured without a warrant.</p>
+
+    <p><strong>Data retention beyond stated limits.</strong> <a href="https://le.utah.gov/xcode/Title41/Chapter6A/C41-6a-P20_1800010118000101.pdf">Utah Code § 41-6a-2007</a> caps retention at nine months unless data is subject to a warrant, preservation request, or disclosure order. Wasatch County's <a href="https://www.wasatchsheriff.gov/policies-2/policy-427">Policy 427</a> reproduces that cap; the other three agencies have no posted policy that confirms the cap is honored. The <a href="https://privacy.utah.gov/25-04-automatic-license-plate-readers/">Utah Privacy Office's 2025-04 audit</a> reviewed two unnamed Utah law enforcement agencies and found that neither had created a formal retention schedule. Without the schedule, the cap is an aspiration. Without audit, the cap is unverifiable.</p>
+
+    <p><strong>Access without audit or control.</strong> The same statute requires that every query be logged: querying officer, time, purpose, case or incident number. The Wasatch and Park City policies reproduce the requirement; Summit's posted document includes it but in unfilled-template form. None of the four agencies has published audit logs, summary statistics, or any other artifact that would let the public verify the requirement is honored. The Flock Nationwide Lookup network, which lets any participating agency query data captured anywhere on the network, magnifies the exposure: a query from an out-of-state agency reading Park City plate captures leaves no Utah-side audit trail at all unless the local agency has configured one. None of the four agencies has enabled the <a href="https://transparency.flocksafety.com/">public-facing transparency portal</a> Flock provides for documenting that configuration.</p>
+
+    <p><strong>Use outside the statutory framework.</strong> <a href="https://le.utah.gov/xcode/Title41/Chapter6A/C41-6a-P20_1800010118000101.pdf">Utah Code § 41-6a-2005(1)</a> limits permitted ALPR use to a closed list: stolen vehicles, AMBER and Silver Alerts, missing persons, outstanding warrants, registration verification, toll collection, and parking enforcement. <a href="https://privacy.utah.gov/25-04-automatic-license-plate-readers/">The Privacy Office's audit</a> found that one of the two unnamed agencies it reviewed had a policy authorizing ALPR use for "homeland security and electronic surveillance" — purposes that exceed the statute. The same audit found a policy that failed to require reasonable suspicion. The agency names are redacted in the public report.</p>
+
+    <p>These are not theoretical risks. They are the four specific failure modes the legislature wrote the statute to prevent. The statute prevents nothing it cannot see, and the agencies operating the cameras have not made themselves visible.</p>
+
+    <h2>What it looks like when it fails</h2>
+
+    <p>The statutory categories above describe legal exposure. They do not describe what the system is, in practice, capable of producing about an individual person living in or passing through Park City.</p>
+
+    <p>An ALPR network does not capture identities. It captures movements. A single plate read records a vehicle, a time, and a location. Two reads describe a route. A month of reads describe a routine — when a person leaves home, where they go for work, which side of the basin they sleep on, which medical facilities they visit, which place of worship they attend, which protest, donor event, or labor meeting they parked near, who they travel with based on the vehicles that consistently appear within minutes of theirs at the same intersections. With the AI features Flock markets — make, model, occupant count, identifying stickers and accessories — that profile sharpens. With the Flock Nationwide Lookup network, which lets any participating agency query data captured anywhere on the network, the profile is queryable from Texas, Florida, or Virginia by any agency, public or private, that holds a Flock account.</p>
+
+    <p>That network is not theoretical. <a href="https://www.almanacnews.com/police/2026/04/22/palo-alto-license-plate-data-searched-by-hundreds-of-out-of-state-agencies/">Palo Alto's license plate data was searched by hundreds of out-of-state agencies</a>. <a href="https://www.rwcpulse.com/investigative-story/2025/08/19/menlo-park-police-broke-state-law-shared-license-plate-data-out-of-state/">Menlo Park police shared plate data out of state in apparent violation of California law.</a> <a href="https://www.404media.co/flock-exposed-its-ai-powered-cameras-to-the-internet-we-tracked-ourselves/">404 Media documented sixty Flock Condor cameras left fully exposed on the open internet</a>, no password required, including a camera surveilling children at a playground. <a href="https://www.404media.co/flock-logins-exposed-in-malware-infections-senator-asks-ftc-to-investigate-the-company/">Senator Ron Wyden asked the FTC to investigate Flock after agency credentials surfaced in infostealer-malware dumps</a>, meaning private criminals could log in as a participating police officer and run queries the officer's own department wouldn't authorize. <a href="https://www.eff.org/deeplinks/2016/01/no-cost-license-plate-readers-are-turning-texas-police-mobile-debt-collectors-and">In Texas, ALPR systems were turned into mobile debt-collection tools</a>, with police running plates against private collection lists. None of these are speculative scenarios. All of them happened to active deployments operated by agencies with policies on file.</p>
+
+    <p>The Park City basin is structurally vulnerable to every one of these failure modes, and to several specific to it. The Sundance Film Festival brings filmmakers, journalists, foreign nationals, activists, and political figures through SR-224 and US-40 every January — every plate read into a system whose data-sharing partners are not publicly disclosed. The basin is home to some of the densest concentrations of substance-treatment and behavioral-health facilities in the Mountain West; patients arrive and depart through the same surveilled corridors. The resort workforce skews Latino and immigrant; the same corridors that capture executive plates capture employee plates, and a federal partner with Flock query access does not need a warrant to know which Heber Valley apartments those vehicles return to at night. Utah's restrictive abortion law makes the basin a corridor for cross-state travel by people seeking healthcare; those movements, too, are captured. None of the four agencies has published a data-sharing list. None has published a query log. None has enabled the public Flock transparency portal that would document who, exactly, has been looking.</p>
+
+    <p>The cameras do not need to be misused for this to be the worst-case description. They only need to be running. The system's design — networked, retained, enriched, queryable from anywhere — produces this capability by default.</p>
+
+    <h2>The gap that remains</h2>
+
+    <p>What emerges is not a single failure, but a layered pattern.</p>
+
+    <p>A surveillance network that is visible in the physical world and on <a href="https://www.reddit.com/r/ParkCity/comments/1qm6hi6/flock_cameras_in_park_city/">community Reddit threads since January 2026</a>. Policy-compliant only retroactively, on a calendar that lags deployment by years, and absent for two of the four agencies entirely. Partly itemized in the public record — the two Vigilant cameras — and partly invisible. Permitted under a <a href="https://connect.udot.utah.gov/business/permits/license-plate-reader/">single jurisdiction-wide UDOT permit</a> administered offline. Operated by an agency whose own <a href="https://parkcity.gov/home/showpublisheddocument/77276/638962019925570000">2024 Annual Report</a> omits the system. Structurally insulated, in the Mayflower corridor, by <a href="https://www.midaut.org/">a state-level authority</a> that bypasses county procurement. Absent from <a href="https://www.atlasofsurveillance.org/search?utf8=%E2%9C%93&location=Utah">national surveillance databases</a>. Acknowledged, in writing, in <a href="https://parkcity.gov/Home/Components/RFP/RFP/15864/2339">a single sentence inside a procurement waiver</a>.</p>
+
+    <p>In Utah, the law was written to prevent precisely this outcome. Instead, the system has evolved around each disclosure mechanism in turn.</p>
+
+    <p>There is no dispute that the cameras exist. There is no public record of who paid for the eighteen Flock units. The published policy from the agency that admitted operating the system is Lexipol boilerplate that names no vendor, locates no camera, and lists no data-sharing partner.</p>
+
+    <p>The central question is no longer whether Park City is Flocked.</p>
+
+    <blockquote class="pull">Who can see what those cameras see?</blockquote>
+
+    <p class="closer"><a href="https://parkcity.gov/Home/Components/RFP/RFP/15864/2339">One captain's sentence</a>, posted to the city RFP portal in February 2025, is the only thing on the public record that confirms the system exists. The cameras have been running ever since.</p>
+
+  </article>
+
+  <section class="sources">
+    <div class="sources-inner">
+      <div class="section-label">Methodology &amp; Sources</div>
+      <h2>How we reported this story</h2>
+      <p class="intro">Every claim in this piece is traceable to a public record. The raw datasets were pulled directly from government APIs and open data endpoints between April 24 and April 25, 2026. This document is a living investigation; new sources are added as the reporting advances.</p>
+
+      <h3>Cameras on the ground</h3>
+      <ul>
+        <li>OpenStreetMap surveillance node dataset, pulled via Overpass API mirror at <a href="https://overpass.kumi.systems/api/interpreter">overpass.kumi.systems/api/interpreter</a> on 2026-04-25. Query: <code>[out:json];(node["man_made"="surveillance"](40.55,-111.70,40.85,-111.20););out body;</code> Returned 26 surveillance nodes; 20 tagged ALPR (18 Flock Safety, 2 Motorola Solutions).</li>
+        <li>Example camera node: <a href="https://www.openstreetmap.org/node/12783977497">openstreetmap.org/node/12783977497</a> (Mayflower)</li>
+        <li>DeFlock crowdsourced ALPR map: <a href="https://deflock.org/map">deflock.org/map</a></li>
+      </ul>
+
+      <h3>Utah law</h3>
+      <ul>
+        <li>Utah HB 468 (2025): <a href="https://le.utah.gov/~2025/bills/static/HB0468.html">le.utah.gov/~2025/bills/static/HB0468.html</a></li>
+        <li>Utah Code Title 41 Chapter 6A Part 20 — Automatic License Plate Reader System Act: <a href="https://le.utah.gov/xcode/Title41/Chapter6A/C41-6a-P20_1800010118000101.pdf">le.utah.gov</a></li>
+        <li>Utah Admin. Code R920-4-16 — UDOT Special Use Permit rule: <a href="https://www.law.cornell.edu/regulations/utah/Utah-Admin-Code-R920-4-16">law.cornell.edu</a></li>
+        <li>UDOT ALPR permit page: <a href="https://connect.udot.utah.gov/business/permits/license-plate-reader/">connect.udot.utah.gov/business/permits/license-plate-reader</a></li>
+      </ul>
+
+      <h3>Policy documents</h3>
+      <ul>
+        <li>Wasatch County Sheriff Policy 427 (Dec 12, 2023): <a href="https://www.wasatchsheriff.gov/policies-2/policy-427">wasatchsheriff.gov/policies-2/policy-427</a></li>
+        <li><strong>Summit County Sheriff Policy 460:</strong> <a href="https://www.summitcountyutah.gov/DocumentCenter/View/26532/Automated_License_Plate_Readers__ALPRs_">summitcountyutah.gov/DocumentCenter/View/26532</a>. Lexipol footer copyright date: February 10, 2026. The footer date reflects when Lexipol pushed the underlying template revision; it is not necessarily the date Summit County formally adopted the policy. The posted document does not include an adoption record, sheriff's order, or county council resolution. Several sections retain unfilled "[Department/Office]" Lexipol placeholders, suggesting the document was uploaded without final customization. Public-records request pending for the formal adoption record.</li>
+        <li>Park City PD Policy 429, "Automated License Plate Readers (ALPRs)" (Lexipol revision 2024/04/23, page 359 of 704): <a href="https://parkcity.gov/home/showpublisheddocument/68749/638495489747270000">parkcity.gov/home/showpublisheddocument/68749/638495489747270000</a> — vendor-anonymous; does not name Motorola Vigilant despite the department's February 2025 acknowledgment of operating that system; does not identify camera locations or data-sharing partners. Department landing page: <a href="https://parkcity.gov/departments/police">parkcity.gov/departments/police</a></li>
+        <li>Heber City PD: <a href="https://www.heberut.gov/151/Police">heberut.gov/151/Police</a> — no ALPR policy publicly findable on the department's website as of April 26, 2026; public-records request pending</li>
+        <li>Utah Privacy Office report 25-04: <a href="https://privacy.utah.gov/25-04-automatic-license-plate-readers/">privacy.utah.gov/25-04-automatic-license-plate-readers</a></li>
+      </ul>
+
+      <h3>Spending records</h3>
+      <ul>
+        <li>Transparent Utah vendor payment API: <code>POST https://tu-query-handler-prod-uewlhjwsua-wm.a.run.app</code> with <code>function=getVendorSearch</code>. Pulled 2026-04-24 through 2026-04-26 for vendors: <code>flock</code>, <code>insight</code>, <code>cdw</code>, <code>motorola</code>, <code>vigilant</code>, <code>spillman</code>.</li>
+        <li>Wasatch County to Vigilant Solutions: $100,000 in FY2023. Summit County to Vigilant Solutions LLC: $10,280 in FY2023. Both directly itemized in Transparent Utah as "Vigilant Solutions" line items.</li>
+        <li>Park City to Motorola Solutions Inc, FY2014–FY2026: $708,048 total. Spike year FY2024: $166,431. FY2026 partial-year: $144,223. Note: Motorola Solutions' product line for police agencies is dominated by two-way radios and dispatch infrastructure; only a portion of this aggregate figure is likely surveillance-related, and the Transparent Utah dataset does not break out line items.</li>
+        <li>Park City uses Spillman Technologies records management system, paid $168,626 FY2014-FY2019. Wasatch County paid Spillman $427,549 over the same period; Summit County paid $384,911. Spillman is the county-wide records system referenced in Park City RFP PCMC25107.</li>
+        <li>Public web interface: <a href="https://transparent.utah.gov/">transparent.utah.gov</a> · <a href="https://transparent.utah.gov/vendet.php">vendor search</a></li>
+        <li>Park City to Insight Public Sector, FY2021–FY2026: $579,125 across 39 line items in the dataset</li>
+        <li>Park City to CDW Government / CDW LLC, FY2014–FY2026: $2,590,909 across 72 line items</li>
+        <li>OMNIA Partners Flock Safety cooperative contract <strong>R250203</strong>: contract documents at <a href="https://www.omniapartners.com/suppliers/flock-safety/public-sector/contract-documents">omniapartners.com</a>; full price list (PDF, 5/29/2025) at <a href="https://www.omniapartners.com/suppliers-files/E-J/Flock_Safety/Contract_Documents/R250203/5_29_2025_Flock_Safety_Omnia__R250203_Price_List.pdf">omniapartners.com R250203 price list</a> — names Insight Public Sector and CDW as authorized resellers; contract term April 1, 2025 through March 31, 2028</li>
+        <li>Insight Enterprises, Inc. (NASDAQ: NSIT) — 2024 annual revenue $8.70 billion per Q4 2024 earnings release: <a href="https://investor.insight.com/news-releases/news-release-details/2025/Insight-Enterprises-Inc.-Reports-Fourth-Quarter-and-Full-Year-Results/">investor.insight.com</a>. Public-sector arm: <a href="https://ips.insight.com/en_US/public-sector.html">ips.insight.com/public-sector</a></li>
+        <li>Insight Public Sector OMNIA contract documents: <a href="https://www.omniapartners.com/suppliers/insight-public-sector/public-sector/contract-documents">omniapartners.com</a></li>
+        <li>KUER, "Ogden is Utah's biggest spender on Flock cameras" (Jan 21, 2026): <a href="https://www.kuer.org/politics-government/2026-01-21/ogden-is-utahs-biggest-spender-on-flock-cameras-heres-how-the-city-uses-them">kuer.org</a></li>
+      </ul>
+
+      <h3>UDOT permit data</h3>
+      <ul>
+        <li>UDOT ALPR permitting page: <a href="https://connect.udot.utah.gov/business/permits/license-plate-reader/">connect.udot.utah.gov/business/permits/license-plate-reader</a> — exact language: "Only one ALPRS Special Use Permit is required for each municipality. Multiple ALPRS may be installed within the law enforcement's jurisdiction using the approved ALPRS Special Use Permit."</li>
+        <li>UDOT ROW Encroachment Permits ArcGIS REST endpoint: <a href="https://central.udot.utah.gov/server/rest/services/ROW/Permits/MapServer">central.udot.utah.gov/server/rest/services/ROW/Permits/MapServer</a></li>
+        <li>Public ArcGIS Hub: <a href="https://hub.arcgis.com/maps/5124dbdc6fc9460c86707487a36d40c1">hub.arcgis.com/maps/5124dbdc6fc9460c86707487a36d40c1</a></li>
+        <li>Pulled 2026-04-25, all four layers, bbox -111.70 / 40.55 / -111.20 / 40.85. Total 1,425 permits. Keyword search across all text fields for ALPR / license plate / plate reader / Flock / Motorola / Vigilant / Axon / Rekor returned zero matches — consistent with Special Use Permits being administered separately by email.</li>
+        <li>Blyncsy precedent permit (App 91070, 2019-01-09): SR-224 traffic monitoring sensors sponsored by "Park City: Alfred Knotts" for "origin and destination information" — direct from MapServer query.</li>
+      </ul>
+
+      <h3>Community mapping</h3>
+      <ul>
+        <li>r/ParkCity subreddit, "Flock cameras in Park City" (Jan 25, 2026) — 126 upvotes, 82 comments: <a href="https://www.reddit.com/r/ParkCity/comments/1qm6hi6/flock_cameras_in_park_city/">reddit.com/r/ParkCity</a></li>
+        <li>Follow-up commentary, April 21, 2026: <a href="https://www.reddit.com/r/ParkCity/comments/1sqqdwt/manhunt_underway_after_domestic_dispute_led_to/">reddit.com/r/ParkCity</a></li>
+        <li>DeFlock crowdsourced ALPR map, ~89,883 LPRs nationally as of late April 2026: <a href="https://deflock.org/map">deflock.org/map</a></li>
+        <li>OpenStreetMap mapping timeline derived from per-node history endpoints (e.g., <a href="https://www.openstreetmap.org/api/0.6/node/12783977497/history">api.openstreetmap.org/api/0.6/node/{nid}/history</a>) — Wave 1 by user Ferrett, April 23-27, 2025 (9 cameras); Wave 2 by user Tommy Tran via DeFlock 2.3.1 import tool, January 30-31, 2026 (9 cameras); QuimblyGurts (1 camera, Jan 20, 2026); Jeffreeski (1 camera, Feb 14, 2026)</li>
+      </ul>
+
+      <h3>Park City RFP and procurement</h3>
+      <ul>
+        <li>Park City Municipal Corp current RFPs and bids: <a href="https://parkcity.gov/Home/Components/RFP/RFP/15864/2339">parkcity.gov/Home/Components/RFP/RFP/15864/2339</a></li>
+        <li><strong>RFP PCMC25107</strong> (Feb 6, 2025): "Command Central Evidence Plus and WatchGuard Cloud Storage Solution" — Motorola sole-source, $78,754.14, requested by Park City Police Department, contact: Rob McKinney (RMcKinney@parkcity.org). Justification quoted verbatim (the spelling "Vigilante" is the notice's, [sic]): "This software would also allow PCPD to integrate their current license plate reader system, Motorola Vigilante to better share information." Notice also identifies existing Motorola Watchguard body-worn and vehicle cameras; cites Motorola as the only provider integrating with Spillman records management. The product is formally Motorola/Vigilant Solutions; the misspelling appears in the original notice.</li>
+        <li>Park City Police Department captains: Rob McKinney (promoted October 2023, oversees patrol/administration); Park Record coverage <a href="https://www.parkrecord.com/2023/10/09/the-captains-rank/">parkrecord.com</a></li>
+        <li><strong>Park City Police Department 2024 Annual Report</strong> (PDF, 22 pages): <a href="https://parkcity.gov/home/showpublisheddocument/77276/638962019925570000">parkcity.gov/home/showpublisheddocument/77276</a>. Lists body/in-car cameras, communications equipment, UAS drones, Spillman records system, SIAC partnership; <em>contains no reference to ALPR, license plate readers, Vigilant, or Flock.</em></li>
+        <li>Park City FY2025 Budget Document (Volume I &amp; II, 30,464 lines): <a href="https://parkcity.gov/departments/budget-debt-grants/budget-document-archive">parkcity.gov budget archive</a>. Two references to "automated license plate recognition systems" appear in the Parking section, not Police. Capital project CP0615 (Police Equipment Replacement Fund), $723,850 total budget, manager: Captain McKinney.</li>
+        <li>Park City NextRequest GRAMA portal: <a href="https://city-of-park-city-ut.nextrequest.com/">city-of-park-city-ut.nextrequest.com</a></li>
+      </ul>
+
+      <h3>Authoritative municipal boundary</h3>
+      <ul>
+        <li>Utah Automated Geographic Reference Center (AGRC) Municipal Boundaries feature service: <a href="https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahMunicipalBoundaries/FeatureServer/0/query?where=NAME%3D%27PARK+CITY%27&f=geojson&outFields=*">services1.arcgis.com/.../UtahMunicipalBoundaries</a></li>
+        <li>Pulled 2026-04-26. Park City UT (Summit County portion: 534-point polygon) point-in-polygon check returned 8 of 20 mapped ALPR cameras inside corporate limits.</li>
+      </ul>
+
+      <h3>BRT construction</h3>
+      <ul>
+        <li>Park Record, "High Valley Transit awards SR-224 BRT contract to Stacy and Witbeck Inc." (Feb 26, 2025): <a href="https://www.parkrecord.com/2025/02/26/high-valley-transit-awards-s-r-224-bus-rapid-transit-contract-to-stacy-and-witbeck-inc/">parkrecord.com</a></li>
+        <li>Park Record, "Construction on SR-224 begins April 6" (Mar 20, 2026): <a href="https://www.parkrecord.com/2026/03/20/construction-on-s-r-224-begins-april-6-as-high-valley-takes-next-step-in-bus-rapid-transit-project/">parkrecord.com</a></li>
+        <li>High Valley Transit project page: <a href="https://www.hvtutah.gov/sr224-brt">hvtutah.gov/sr224-brt</a></li>
+        <li>Blyncsy: <a href="https://blyncsy.com/">blyncsy.com</a> · Rekor partner page: <a href="https://www.rekor.ai/partners/blyncsy">rekor.ai/partners/blyncsy</a></li>
+        <li>Park Rag local reporting on the 2019 Blyncsy pilot: <a href="https://www.parkrag.com/more-on-blyncsy/">parkrag.com/more-on-blyncsy</a></li>
+      </ul>
+
+      <h3>MIDA / Mayflower</h3>
+      <ul>
+        <li>MIDA: <a href="https://www.midaut.org/">midaut.org</a></li>
+        <li>Park Record, "Wasatch County places a bet with MIDA" (Oct 31, 2023): <a href="https://www.parkrecord.com/2023/10/31/wasatch-county-places-a-bet-with-mida-and-still-gets-some-tax-revenue-in-the-deal/">parkrecord.com</a></li>
+        <li>MIDA project area description (Wasatch County Economic Development PDF): <a href="https://assets.simpleviewinc.com/simpleview/image/upload/v1/clients/parkcity/Wasatch_County_Economic_Development_e5c1209d-c431-4985-ad2f-9736f074711d.pdf">simpleviewinc.com</a></li>
+        <li>MIDA enabling legislation overview: <a href="https://le.utah.gov/interim/2014/pdf/00004356.pdf">le.utah.gov</a></li>
+      </ul>
+
+      <h3>National surveillance databases</h3>
+      <ul>
+        <li>EFF Atlas of Surveillance — Utah: <a href="https://www.atlasofsurveillance.org/search?utf8=%E2%9C%93&location=Utah">atlasofsurveillance.org</a></li>
+        <li>Eyes on Flock: <a href="https://eyesonflock.com/">eyesonflock.com</a></li>
+      </ul>
+
+      <h3>Background reporting</h3>
+      <ul>
+        <li>404 Media — "Flock Exposed Its AI-Powered Cameras to the Internet": <a href="https://www.404media.co/flock-exposed-its-ai-powered-cameras-to-the-internet-we-tracked-ourselves/">404media.co</a></li>
+        <li>404 Media — Flock logins exposed in malware infections: <a href="https://www.404media.co/flock-logins-exposed-in-malware-infections-senator-asks-ftc-to-investigate-the-company/">404media.co</a></li>
+        <li>EFF ALPR explainer: <a href="https://sls.eff.org/technologies/automated-license-plate-readers-alprs">sls.eff.org</a></li>
+        <li>ACLU of Utah — Privacy &amp; Technology: <a href="https://www.acluutah.org/en/issues/privacy-technology">acluutah.org</a></li>
+      </ul>
+
+      <h3>Outstanding records requests</h3>
+      <ul>
+        <li>Park City Municipal Corp — purchase orders and invoices for all payments to Insight Public Sector and CDW Government, FY2022–FY2026, with line-item product detail (Utah Code § 63G-2)</li>
+        <li>UDOT — all ALPR Special Use Permit applications for Summit and Wasatch counties</li>
+        <li>CCJJ — Confirmation of Receipt list for all FY2026 ALPR annual reports filed by the March 1, 2026 deadline (Utah Code § 41-6a-2004)</li>
+        <li>MIDA — all agreements between MIDA and Wasatch County Sheriff's Office; all law enforcement service contracts; all surveillance technology agreements relating to the Mayflower project area</li>
+        <li>Park City PD, Summit County SO, Wasatch County SO — Flock user accounts, query logs, data-sharing agreements with the Flock Nationwide Lookup network</li>
+      </ul>
+
+    </div>
+  </section>
+
+  <footer class="colophon">
+    <strong>The Dispatch</strong> · A living investigation · Updated 2026-04-26
+  </footer>
+
+</body>
+</html>
