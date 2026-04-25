@@ -77,108 +77,66 @@
     font-size: 10.5px;
   }
 
-  /* Cover hero — image with overlay headline */
-  .cover {
-    position: relative;
-    width: 100%;
-    min-height: 78vh;
-    background: #0a0a0a;
-    overflow: hidden;
-    display: flex;
-    align-items: flex-end;
-  }
-  .cover-img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    background: linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 100%);
-    z-index: 0;
-  }
-  .cover::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg,
-      rgba(0,0,0,0.20) 0%,
-      rgba(0,0,0,0.05) 35%,
-      rgba(0,0,0,0.55) 75%,
-      rgba(0,0,0,0.92) 100%);
-    z-index: 1;
-    pointer-events: none;
-  }
-  .cover-inner {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    max-width: 1200px;
+  /* Forbes Daily Cover pattern — rubric + headline above, image below */
+  .cover-head {
+    max-width: 1100px;
     margin: 0 auto;
-    padding: 60px 32px 56px;
-    color: #fff;
+    padding: 56px 32px 40px;
+    text-align: center;
   }
-  .breadcrumb {
+  .rubric {
     font-family: "Inter", sans-serif;
     font-size: 11px;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.85);
-    font-weight: 600;
-    margin-bottom: 24px;
-  }
-  .breadcrumb .sep {
-    color: rgba(255,255,255,0.4);
-    margin: 0 8px;
-  }
-  .breadcrumb .live {
-    color: #ff5b66;
+    color: var(--ink);
     font-weight: 700;
+    margin-bottom: 28px;
   }
-  .cover h1 {
+  .cover-head h1 {
     font-family: "Spectral", "Iowan Old Style", "Georgia", serif;
     font-weight: 700;
     font-size: 72px;
-    line-height: 0.98;
-    letter-spacing: -0.04em;
-    margin: 0 0 24px;
-    color: #fff;
-    max-width: 900px;
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    margin: 0 auto;
+    color: var(--ink);
+    max-width: 980px;
     font-feature-settings: "kern" 1, "liga" 1;
     text-rendering: optimizeLegibility;
-    text-shadow: 0 2px 24px rgba(0,0,0,0.35);
-  }
-  .cover .deck {
-    font-family: "Inter", "Helvetica Neue", sans-serif;
-    font-weight: 400;
-    font-size: 20px;
-    line-height: 1.45;
-    letter-spacing: -0.005em;
-    color: rgba(255,255,255,0.92);
-    margin: 0;
-    max-width: 720px;
-    font-feature-settings: "kern" 1, "liga" 1;
-    text-rendering: optimizeLegibility;
-    text-shadow: 0 1px 12px rgba(0,0,0,0.45);
-  }
-  .image-credit {
-    position: absolute;
-    bottom: 12px;
-    right: 16px;
-    z-index: 2;
-    font-family: "Inter", sans-serif;
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.6);
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
   }
 
-  /* Article meta block under cover */
+  /* Full-width image below cover headline */
+  .cover-image {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: #f0ede4;
+    line-height: 0;
+  }
+  .cover-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Article meta block under image */
   .meta-strip {
     max-width: 760px;
-    margin: 0 auto;
-    padding: 28px 32px 0;
+    margin: 32px auto 0;
+    padding: 0 32px;
+  }
+  .meta-strip .deck-below {
+    font-family: "Inter", "Helvetica Neue", sans-serif;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.45;
+    letter-spacing: -0.005em;
+    color: #333;
+    margin: 0 0 32px;
+    max-width: 680px;
+    font-feature-settings: "kern" 1, "liga" 1;
+    text-rendering: optimizeLegibility;
   }
 
   /* Forbes-style author block */
@@ -617,14 +575,11 @@
     .topbar { padding: 10px 16px; }
     .topbar nav { font-size: 9.5px; }
     .masthead { font-size: 18px; }
-    .cover { min-height: 70vh; }
-    .cover-inner { padding: 40px 20px 36px; }
-    .cover h1 { font-size: 38px; letter-spacing: -0.03em; }
-    .cover .deck { font-size: 16px; }
-    .breadcrumb { font-size: 10px; letter-spacing: 0.12em; margin-bottom: 18px; }
-    .breadcrumb .sep { margin: 0 6px; }
-    .image-credit { writing-mode: horizontal-tb; transform: none; bottom: auto; top: 12px; right: 12px; font-size: 9px; }
-    .meta-strip { padding: 24px 20px 0; }
+    .cover-head { padding: 36px 20px 28px; }
+    .cover-head h1 { font-size: 36px; letter-spacing: -0.03em; }
+    .rubric { font-size: 10px; letter-spacing: 0.18em; margin-bottom: 20px; }
+    .meta-strip { padding: 0 20px; margin-top: 24px; }
+    .meta-strip .deck-below { font-size: 18px; margin-bottom: 24px; }
     .author-block { gap: 12px; flex-wrap: wrap; }
     .avatar { width: 40px; height: 40px; font-size: 15px; }
     .meta-right { margin-left: 0; text-align: left; flex-basis: 100%; padding-top: 8px; border-top: 1px solid var(--rule); }
@@ -648,25 +603,19 @@
     <nav>Investigations · Wasatch Back</nav>
   </div>
 
-  <header class="cover">
-    <img class="cover-img" src="hero.jpg" alt="" onerror="this.style.display='none';">
-    <div class="cover-inner">
-      <div class="breadcrumb">
-        <span class="live">● Investigation</span>
-        <span class="sep">/</span>
-        <span>Surveillance &amp; Accountability</span>
-        <span class="sep">/</span>
-        <span>Park City</span>
-      </div>
-      <h1>Is Park City Flocked?</h1>
-      <div class="deck">
-        At least twenty-six automated license plate readers form a perimeter around the basin. Eight sit inside Park City's corporate limits. The published policies that govern them contain language the Utah Privacy Office has already flagged as exceeding state law. The system itself is acknowledged in one sentence in one sole-source procurement waiver, signed by a captain in February 2025.
-      </div>
-    </div>
-    <div class="image-credit">Illustration by The Real McCoy</div>
+  <header class="cover-head">
+    <div class="rubric">The Cover</div>
+    <h1>Is Park City Flocked?</h1>
   </header>
 
+  <figure class="cover-image">
+    <img src="hero.jpg" alt="A moose with surveillance cameras growing from its antlers, on a Park City–style red bridge.">
+  </figure>
+
   <div class="meta-strip">
+    <p class="deck-below">
+      At least twenty-six automated license plate readers form a perimeter around the basin. Eight sit inside Park City's corporate limits. The published policies that govern them contain language the Utah Privacy Office has already flagged as exceeding state law. The system itself is acknowledged in one sentence in one sole-source procurement waiver, signed by a captain in February 2025.
+    </p>
     <div class="author-block">
       <div class="avatar">HM</div>
       <div class="author-info">
@@ -686,11 +635,6 @@
       </div>
     </div>
   </div>
-
-  <figure class="hero-image">
-    <img src="hero.jpg" alt="Hero image — Park City surveillance investigation" onerror="this.style.aspectRatio='16/9';this.style.background='linear-gradient(135deg,#1a1a1a 0%,#3a3a3a 100%)';this.removeAttribute('src');this.alt='Hero image placeholder — drop hero.jpg into the repo root to replace.';">
-    <figcaption><strong>Caption goes here.</strong> Brief description of what the image shows. <span class="credit">Photo by Hawk Mikado / The Real McCoy</span></figcaption>
-  </figure>
 
   <figure class="lede-figure">
     <div id="map" aria-label="Map of mapped ALPR locations around Park City basin">
