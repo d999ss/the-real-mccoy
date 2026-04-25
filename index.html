@@ -447,7 +447,7 @@
     <div class="rubric">An Investigation · Updated</div>
     <h1>Is Park City Flocked?</h1>
     <div class="deck">
-      Twenty automated license plate readers form a perimeter around the basin. Eight sit inside Park City's corporate limits. Park City Police has a published policy that names no vendor and locates no camera. The system itself is acknowledged in one sentence in one sole-source procurement waiver, signed by a captain in February 2025.
+      At least twenty-six automated license plate readers form a perimeter around the basin. Eight sit inside Park City's corporate limits. The published policies that govern them contain language the Utah Privacy Office has already flagged as exceeding state law. The system itself is acknowledged in one sentence in one sole-source procurement waiver, signed by a captain in February 2025.
     </div>
     <div class="byline-row">
       <span class="by">By</span>
@@ -460,11 +460,11 @@
     <div id="map" aria-label="Map of mapped ALPR locations around Park City basin">
       <div class="map-legend">
         <strong>Mapped ALPR cameras</strong>
-        <div><span class="swatch gold"></span>Flock Safety <span>(18)</span></div>
+        <div><span class="swatch gold"></span>Flock Safety <span>(24)</span></div>
         <div><span class="swatch red"></span>Motorola / Vigilant <span>(2)</span></div>
       </div>
     </div>
-    <figcaption><strong>Twenty ALPR cameras in and around Park City, Utah</strong>, derived from OpenStreetMap surveillance node data. The cluster covers every major route into and out of the basin: I-80, US-40, SR-224, and the Deer Valley corridors. Click any marker for vendor and OSM source. <em>Pulled 2026-04-25 via Overpass API.</em></figcaption>
+    <figcaption><strong>At least twenty-six ALPR cameras around Park City, Utah</strong>, derived from OpenStreetMap surveillance node data (24 Flock Safety, 2 Motorola/Vigilant). Coverage spans every major entry corridor: Coalville and Hoytsville on the eastern I-80 approach, Pinebrook and Jeremy Ranch on the western I-80 approach, the Mayflower and Jordanelle corridor on US-40, Kimball Junction on SR-224, and the Heber Valley and Empire Pass corridors south. Click any marker for vendor and OSM source. <em>Pulled 2026-04-26 via Overpass API.</em></figcaption>
   </figure>
 
   <script>
@@ -489,6 +489,12 @@
       {lat: 40.67885, lon: -111.52693, vendor: "Flock Safety",        dir: "292;128", mount: "—", id: 13513743901},
       {lat: 40.66730, lon: -111.49465, vendor: "Flock Safety",        dir: "66;246", mount: "—", id: 13513744201},
       {lat: 40.60778, lon: -111.57979, vendor: "Flock Safety",        dir: 0,   mount: "—",    id: 13563532701},
+      {lat: 41.04561, lon: -111.67595, vendor: "Flock Safety",        dir: "?", mount: "—",    id: 13125780350},
+      {lat: 40.99045, lon: -111.45489, vendor: "Flock Safety",        dir: "?", mount: "—",    id: 13511619102},
+      {lat: 40.92041, lon: -111.40095, vendor: "Flock Safety",        dir: "?", mount: "—",    id: 13513744702},
+      {lat: 40.91359, lon: -111.39897, vendor: "Flock Safety",        dir: "?", mount: "—",    id: 13513744701},
+      {lat: 40.91197, lon: -111.40054, vendor: "Flock Safety",        dir: "?", mount: "—",    id: 13511630201},
+      {lat: 40.61884, lon: -111.78551, vendor: "Flock Safety",        dir: "?", mount: "—",    id: 13125712134},
     ];
     const map = L.map('map', { zoomControl: true, scrollWheelZoom: false });
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -523,9 +529,9 @@
 
     <h2>The perimeter</h2>
 
-    <p>A geospatial review of <a href="https://overpass.kumi.systems/api/interpreter">public mapping data</a>, pulled from <a href="https://www.openstreetmap.org/">OpenStreetMap</a> on April 26, 2026, identifies twenty automated license plate readers positioned around the Park City basin. Eighteen are tagged Flock Safety. Two are tagged Motorola Solutions, the parent company of the Vigilant platform Park City Police acknowledged owning. They sit on poles along I-80 and US-40, near roundabouts and resort turnoffs, pointed at traffic flowing in and out of the Wasatch Back. Some are <a href="https://www.openstreetmap.org/node/12783977497">paired</a>, spaced just far enough apart to capture vehicles in both directions. Others are mounted at choke points where every driver must pass.</p>
+    <p>A geospatial review of <a href="https://overpass.kumi.systems/api/interpreter">public mapping data</a>, pulled from <a href="https://www.openstreetmap.org/">OpenStreetMap</a> on April 26, 2026, identifies at least twenty-six automated license plate readers positioned around the Park City basin and the I-80 corridors that lead in and out of it. Twenty-four are tagged Flock Safety. Two are tagged Motorola Solutions, the parent company of the Vigilant platform Park City Police acknowledged owning. They sit on poles along I-80, US-40, and SR-224, near roundabouts and resort turnoffs, with clusters at every entry choke point — Coalville and Hoytsville on the eastern I-80 approach, Pinebrook and Jeremy Ranch on the western I-80 approach, the Mayflower and Jordanelle corridor on US-40, Kimball Junction on SR-224, and the Heber Valley and Empire Pass corridors south. Some are <a href="https://www.openstreetmap.org/node/12783977497">paired</a>, spaced just far enough apart to capture vehicles in both directions. Others are mounted at choke points where every driver must pass.</p>
 
-    <p>Eight of the twenty sit inside Park City's corporate limits. The figure comes from a point-in-polygon check against <a href="https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahMunicipalBoundaries/FeatureServer/0/query?where=NAME%3D%27PARK+CITY%27&f=geojson&outFields=*">the State of Utah's authoritative municipal boundary file</a>, published by the Utah Automated Geographic Reference Center. The cameras appear along SR-224, Deer Valley Drive, the Empire Pass corridor, and the southern annexed pockets toward Quinn's Junction.</p>
+    <p>Eight of the twenty-six sit inside Park City's corporate limits. The figure comes from a point-in-polygon check against <a href="https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahMunicipalBoundaries/FeatureServer/0/query?where=NAME%3D%27PARK+CITY%27&f=geojson&outFields=*">the State of Utah's authoritative municipal boundary file</a>, published by the Utah Automated Geographic Reference Center. The cameras appear along SR-224, Deer Valley Drive, the Empire Pass corridor, and the southern annexed pockets toward Quinn's Junction. The remaining eighteen cameras sit in unincorporated Summit and Wasatch counties — but every road in or out of Park City passes one.</p>
 
     <p>Eight cameras in a city of 8,500 people, in a basin with one police department, two county sheriff's offices, and a state-level development authority — and almost no record, anywhere, of who paid for them.</p>
 
@@ -543,7 +549,7 @@
 
     <p>The first story is in plain language. Wasatch County paid <a href="https://transparent.utah.gov/vendet.php">Vigilant Solutions $100,000 in fiscal year 2023</a>. Summit County paid <a href="https://transparent.utah.gov/vendet.php">Vigilant Solutions LLC $10,280 the same year</a>. Both records appear in Transparent Utah under the vendor name itself. They are the only direct ALPR-vendor payments by any of the four agencies operating in the Park City basin — and they are consistent with the two Motorola/Vigilant cameras visible on the OSM map, at Kimball Junction and East Jordanelle.</p>
 
-    <p>The second story is the eighteen Flock Safety cameras.</p>
+    <p>The second story is the twenty-four Flock Safety cameras.</p>
 
     <p>Park City Police, Summit County Sheriff, and Wasatch County Sheriff have collectively paid Flock Safety, Flock Group Inc, or any other Flock-branded vendor a total of zero dollars across six fiscal years. <a href="https://transparent.utah.gov/vendet.php">Heber City Police is the lone exception: $24,000 in FY2026</a>, the first appearance of any Flock payment in the region. <a href="https://www.heberut.gov/151/Police">The Heber City Police Department</a> has not published an ALPR policy, in apparent violation of <a href="https://le.utah.gov/xcode/Title41/Chapter6A/C41-6a-P20_1800010118000101.pdf">Utah Code § 41-6a-2003(2)(a)</a>.</p>
 
@@ -579,7 +585,13 @@
 
     <p>Each of the four agencies operating in the Park City basin has a published ALPR policy somewhere — but the policies themselves are nearly identical Lexipol templates and disclose almost nothing about what the agencies actually operate.</p>
 
-    <p>Park City Police Department has <a href="https://parkcity.gov/home/showpublisheddocument/68749/638495489747270000">Policy 429, "Automated License Plate Readers (ALPRs)"</a>, in its Lexipol-managed policy manual, with a revision date of April 23, 2024. The policy is on page 359 of a 704-page document. It is procedurally compliant. It is also vendor-anonymous: it does not name Motorola Vigilant, the system the department subsequently acknowledged operating in its February 2025 sole-source procurement waiver. It does not identify a single camera location. It does not list the agencies the department shares data with. The substantive disclosure required to meaningfully inform the public — what system, where, accessed by whom, retained how long — is in none of those documents. It is in one sentence in one procurement notice signed by one captain.</p>
+    <p>Park City Police Department has <a href="https://parkcity.gov/home/showpublisheddocument/68749/638495489747270000">Policy 429, "Automated License Plate Readers (ALPRs)"</a>, in its Lexipol-managed policy manual, with a revision date of April 23, 2024. The policy is on page 359 of a 704-page document. It is procedurally compliant. It is also vendor-anonymous: it does not name Motorola Vigilant, the system the department subsequently acknowledged operating in its February 2025 sole-source procurement waiver. It does not identify a single camera location. It does not list the agencies the department shares data with.</p>
+
+    <p>What it does contain is language the Utah Privacy Office has already flagged as exceeding state law. Section 429.2 of the Park City policy authorizes the use of ALPR data to "gather information related to active warrants, <strong>homeland security, electronic surveillance, suspect interdiction</strong>, and stolen property recovery." Section 429.3(b) states: "An ALPR may be used in conjunction with any routine patrol operation or official investigation. <strong>Reasonable suspicion or probable cause is not required before using an ALPR.</strong>" The Wasatch County Sheriff's Office Policy 427 contains the identical language, line for line. Both are Lexipol templates from the older revision cycle. Both are still posted as the current operative policy.</p>
+
+    <p>The Utah Privacy Office's <a href="https://privacy.utah.gov/25-04-automatic-license-plate-readers/">25-04 audit</a> reviewed two unnamed Utah law enforcement agencies and found that one had a policy authorizing ALPR use for "homeland security and electronic surveillance" — purposes that exceed the closed list in <a href="https://le.utah.gov/xcode/Title41/Chapter6A/C41-6a-P20_1800010118000101.pdf">Utah Code § 41-6a-2005(1)</a>. The same audit found a policy that "failed to require reasonable suspicion for criminal investigations." The agency names in the report are redacted. The phrases are exact matches for the Park City and Wasatch policy texts.</p>
+
+    <p>Summit County's Policy 460, posted in February 2026, uses a newer Lexipol template that omits both phrases — but, as discussed below, it remained uncustomized at the moment of upload. The substantive disclosure required to meaningfully inform the public — what system, where, accessed by whom, retained how long, against what standard — is in none of those documents. It is in one sentence in one procurement notice signed by one captain.</p>
 
     <p>Wasatch County Sheriff's Office has <a href="https://www.wasatchsheriff.gov/policies-2/policy-427">Policy 427</a>, dated December 12, 2023 — the most prominently posted of the four, and the most clearly customized to the agency. Summit County Sheriff's Office has <a href="https://www.summitcountyutah.gov/DocumentCenter/View/26532/Automated_License_Plate_Readers__ALPRs_">Policy 460</a> in the county's document portal. The Lexipol footer carries a copyright date of February 10, 2026; the document itself does not include an adoption record, sheriff's order, or county council resolution showing when the policy was actually adopted by Summit County. Several sections of the posted document still contain unfilled Lexipol placeholders — "[Department/Office] personnel" rather than "Summit County Sheriff's Office personnel" — suggesting it was uploaded without final customization. <a href="https://www.heberut.gov/151/Police">No ALPR policy is publicly findable on the Heber City Police Department's website</a>; The Real McCoy has filed a public-records request seeking the policy or written confirmation that none exists.</p>
 
@@ -631,7 +643,7 @@
 
     <p>South of Park City, the surveillance ring crosses into a different governance regime.</p>
 
-    <p>The Mayflower Mountain Resort area, where four of the twenty mapped cameras cluster, sits inside a <a href="https://www.midaut.org/">Military Installation Development Authority project area</a>. MIDA is a state-level entity created by the Utah Legislature in 2007. It has its own board, its own contracting authority, and its own tax-increment financing mechanism that routes development around standard county procurement. <a href="https://www.parkrecord.com/2023/10/31/wasatch-county-places-a-bet-with-mida-and-still-gets-some-tax-revenue-in-the-deal/">MIDA, Wasatch County, and Extell Development executed a three-way agreement governing the Mayflower buildout in 2023</a>.</p>
+    <p>The Mayflower Mountain Resort area, where four of the twenty-six mapped cameras cluster, sits inside a <a href="https://www.midaut.org/">Military Installation Development Authority project area</a>. MIDA is a state-level entity created by the Utah Legislature in 2007. It has its own board, its own contracting authority, and its own tax-increment financing mechanism that routes development around standard county procurement. <a href="https://www.parkrecord.com/2023/10/31/wasatch-county-places-a-bet-with-mida-and-still-gets-some-tax-revenue-in-the-deal/">MIDA, Wasatch County, and Extell Development executed a three-way agreement governing the Mayflower buildout in 2023</a>.</p>
 
     <p>The Wasatch County Sheriff has jurisdiction over the project area. The Sheriff has Policy 427 on its website, no Flock spending in the public record, and at least four Flock cameras in territory the agreement governs. Whether MIDA or Extell installed those cameras and granted the Sheriff query access in lieu of the Sheriff buying its own is the most plausible explanation for the gap. The agreement that would prove or disprove it is not public.</p>
 
@@ -669,7 +681,7 @@
 
     <p>In Utah, the law was written to prevent precisely this outcome. Instead, the system has evolved around each disclosure mechanism in turn.</p>
 
-    <p>There is no dispute that the cameras exist. There is no public record of who paid for the eighteen Flock units. The published policy from the agency that admitted operating the system is Lexipol boilerplate that names no vendor, locates no camera, and lists no data-sharing partner.</p>
+    <p>There is no dispute that the cameras exist. There is no public record of who paid for twenty-four of them. The published policies from the agencies operating the system contain language the state's own Privacy Office has flagged as exceeding statutory authority. The Park City Police Department's policy authorizes the system in writing for purposes Utah law does not.</p>
 
     <p>The central question is no longer whether Park City is Flocked.</p>
 
