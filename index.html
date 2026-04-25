@@ -48,17 +48,25 @@
     font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
     text-rendering: optimizeLegibility;
   }
-  /* Forbes-style topbar */
+  /* Forbes-style topbar — centered masthead */
   .topbar {
     background: #000;
     color: #fff;
     padding: 10px 24px;
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: space-between;
     font-family: "Inter", -apple-system, sans-serif;
     font-size: 12px;
     letter-spacing: 0.02em;
+  }
+  .topbar .masthead {
+    grid-column: 2;
+    text-align: center;
+  }
+  .topbar nav {
+    grid-column: 3;
+    text-align: right;
   }
   .masthead {
     font-family: "Spectral", serif;
@@ -238,16 +246,34 @@
   }
   .share-row a:hover { color: var(--ink); }
 
-  .lede-figure {
-    max-width: 1080px;
-    margin: 24px auto 56px;
+  /* Map figure breaks out of the article column */
+  article.body .lede-figure {
+    width: 100vw;
+    max-width: 1200px;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 40px 0 48px;
     padding: 0 32px;
   }
   #map {
     width: 100%;
-    aspect-ratio: 16/10;
+    aspect-ratio: 16/9;
     background: #f7f5f0;
     position: relative;
+    border: 1px solid var(--rule-dark);
+  }
+  @media (max-width: 1264px) {
+    article.body .lede-figure { padding: 0 24px; }
+  }
+  @media (max-width: 700px) {
+    article.body .lede-figure {
+      width: 100%;
+      left: auto;
+      transform: none;
+      padding: 0;
+    }
+    #map { aspect-ratio: 4/3; }
   }
   .leaflet-container {
     font-family: "Inter", sans-serif !important;
@@ -449,6 +475,103 @@
     padding-top: 32px;
     border-top: 2px solid var(--ink);
   }
+
+  /* Timeline graphic */
+  .timeline {
+    margin: 40px -32px 48px;
+    padding: 36px 32px;
+    background: #f7f5f0;
+    border-top: 2px solid var(--ink);
+    border-bottom: 2px solid var(--ink);
+    font-family: "Inter", sans-serif;
+  }
+  .timeline-head {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--link);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .timeline-title {
+    font-family: "Spectral", serif;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 28px;
+    letter-spacing: -0.01em;
+  }
+  .timeline-row {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 20px;
+    padding: 14px 0;
+    border-top: 1px solid #d9d3c0;
+  }
+  .timeline-row:first-of-type { border-top: none; padding-top: 0; }
+  .timeline-year {
+    font-family: "Spectral", serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    padding-top: 4px;
+  }
+  .timeline-events {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .timeline-events .ev {
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--ink);
+    padding-left: 18px;
+    position: relative;
+  }
+  .timeline-events .ev::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 8px;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .timeline-events .ev.national::before { background: var(--link); }
+  .timeline-events .ev.local::before { background: var(--accent); }
+  .timeline-events .ev.alpr::before { background: var(--ink); }
+  .timeline-events .tag {
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--muted);
+    margin-right: 8px;
+  }
+  .timeline-events .tag.local { color: #a07d10; }
+  .timeline-events .tag.national { color: var(--link); }
+  .timeline-events .tag.alpr { color: var(--ink); }
+  .timeline-legend {
+    display: flex;
+    gap: 18px;
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid #d9d3c0;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .timeline-legend span::before {
+    content: "";
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .timeline-legend .l1::before { background: var(--accent); }
+  .timeline-legend .l2::before { background: var(--ink); }
+  .timeline-legend .l3::before { background: var(--link); }
 
   /* Data table inside article */
   table.spend {
@@ -680,6 +803,20 @@
       bounds.extend([c.lat, c.lon]);
     });
     map.fitBounds(bounds, {padding: [40, 40]});
+
+    // Recompute size once the map enters the viewport (it lives inside article body now)
+    if (typeof IntersectionObserver !== 'undefined') {
+      const obs = new IntersectionObserver((entries) => {
+        if (entries.some(e => e.isIntersecting)) {
+          map.invalidateSize();
+          map.fitBounds(bounds, {padding: [40, 40]});
+        }
+      }, { threshold: 0.1 });
+      obs.observe(document.getElementById('map'));
+    }
+    window.addEventListener('resize', () => map.invalidateSize());
+    setTimeout(() => { map.invalidateSize(); map.fitBounds(bounds, {padding: [40, 40]}); }, 250);
+    setTimeout(() => { map.invalidateSize(); map.fitBounds(bounds, {padding: [40, 40]}); }, 1000);
   </script>
 
 
@@ -851,6 +988,97 @@
     <p>The Park City basin is structurally vulnerable to every one of these failure modes, and to several specific to it. The Sundance Film Festival brings filmmakers, journalists, foreign nationals, activists, and political figures through SR-224 and US-40 every January — every plate read into a system whose data-sharing partners are not publicly disclosed. The basin is home to some of the densest concentrations of substance-treatment and behavioral-health facilities in the Mountain West; patients arrive and depart through the same surveilled corridors. The resort workforce skews Latino and immigrant; the same corridors that capture executive plates capture employee plates, and a federal partner with Flock query access does not need a warrant to know which Heber Valley apartments those vehicles return to at night. Utah's restrictive abortion law makes the basin a corridor for cross-state travel by people seeking healthcare; those movements, too, are captured. None of the four agencies has published a data-sharing list. None has published a query log. None has enabled the public Flock transparency portal that would document who, exactly, has been looking.</p>
 
     <p>The cameras do not need to be misused for this to be the worst-case description. They only need to be running. The system's design — networked, retained, enriched, queryable from anywhere — produces this capability by default.</p>
+
+    <h2>What other cities have already done</h2>
+
+    <p>Park City is not the first municipality to discover the gap between Flock's marketing and how its network actually behaves. Other agencies got there earlier and have since reversed course.</p>
+
+    <p>In <a href="https://www.mountainview.gov/Home/Components/News/News/1211/284">Mountain View, California, the city council voted unanimously on February 24, 2026 to terminate its Flock Safety contract</a>. The trigger: from August through November 2024, several federal law enforcement agencies had accessed the city's ALPR data through a "Nationwide Lookup" search setting that <a href="https://localnewsmatters.org/2026/03/01/mountain-view-ends-flock-safety-license-plate-reader-contract/">Flock had silently enabled without the police department's permission or knowledge</a>. <a href="https://www.peninsulapress.com/2026/02/27/mountain-view-votes-to-cut-license-plate-camera-contract/">From December 2024 through December 2025, more than 250 unapproved agencies ran approximately 600,000 searches</a> against Mountain View's records.</p>
+
+    <p>In <a href="https://www.kqed.org/news/12074467/santa-clara-county-leaders-cut-out-flock-safety-in-new-surveillance-policy">Santa Clara County, the Board of Supervisors adopted a new surveillance use policy in early 2026 prohibiting the Sheriff's Office from contracting with Flock Safety</a>. <a href="https://www.usnews.com/news/best-states/california/articles/2026-03-05/out-of-state-police-access-silicon-valley-license-plate-readers">Camera logs showed the Las Vegas Metropolitan Police Department had searched the Santa Clara network 5,600 times in a single month</a> — an out-of-state agency querying California plate captures with no local notification or consent. Santa Cruz, Los Altos Hills, and Mountain View all terminated their contracts in January and February 2026.</p>
+
+    <p>In <a href="https://localnewsmatters.org/2026/03/18/richmond-flock-contract-extension-privacy-debate/">Richmond, the police department discovered in October 2025 that federal agencies had been accessing local data through Flock's "National Lookup" feature</a>. The Richmond City Council voted in March 2026 to extend the contract only on a short timeline while staff explored alternative vendors.</p>
+
+    <p>The aggregate scale of the unauthorized access is now public record. <a href="https://www.courthousenews.com/california-drivers-accuse-flock-safety-of-sharing-data-with-federal-and-out-of-state-agencies/">A class-action lawsuit filed by California drivers in early 2026 alleges that Flock allowed law enforcement agencies from outside California to query the San Francisco Police Department's database more than 1.6 million times between August 2024 and February 2025, and the Los Altos database more than a million times across 2024 and 2025</a>. The plaintiffs allege the searches happened without consent, without notification, and without local audit.</p>
+
+    <p>The relevant question for Park City is whether the same misconfiguration pattern is active here, on the twenty-six cameras documented in the Park City basin, and whether the four agencies operating them — none of which has enabled the public Flock transparency portal — would know if it were.</p>
+
+    <p>Flock's own product documentation explains why the stakes are higher than a license plate. The company's <a href="https://www.flocksafety.com/products/license-plate-readers">Vehicle Fingerprint</a> system goes beyond the plate itself, capturing make, model, color, body type, distinguishing decals, bumper stickers, roof racks, aftermarket modifications, dents and damage patterns, even temporary paper plates. Each scan produces a profile that, in aggregation, can re-identify a vehicle even when the plate is unreadable. That richer data set is what travels across the Nationwide Lookup network — including, in the cases above, to agencies that should not have had access at all.</p>
+
+    <p>In Park City, the route by which it travels appears to run through Motorola's Spillman records system. The February 2025 sole-source procurement waiver explicitly justified Park City PD's $78,754 award to Motorola on the grounds that Motorola was the only vendor that integrates with Spillman, the records platform shared county-wide. The waiver text said the new software would let the department "integrate their current license plate reader system, Motorola Vigilante, to better share information." That phrase is not idle — it describes the architectural intent. Surveillance data captured at Kimball Junction and Mayflower flows into a shared records environment that other agencies, including federal partners, can access depending on the configuration.</p>
+
+    <p>Flock Safety publishes individual <a href="https://transparency.flocksafety.com/">transparency portals</a> for customer agencies that opt in. <a href="https://transparency.flocksafety.com/park-city-ks-pd">Park City, Kansas Police Department has a portal</a>, listing camera counts and aggregate query statistics. Park City, Utah does not. Neither does Summit County, Wasatch County, or Heber City. The four agencies in this investigation have either declined to enable the portals or have not been asked.</p>
+
+    <h2>The timeline</h2>
+
+    <div class="timeline">
+      <div class="timeline-head">Chronology · The Real McCoy</div>
+      <div class="timeline-title">From a small reseller line item to a national lawsuit, in five years.</div>
+
+      <div class="timeline-row">
+        <div class="timeline-year">2021</div>
+        <div class="timeline-events">
+          <div class="ev local"><span class="tag local">Park City</span>Park City Municipal pays Insight Public Sector $66,085 — first year of a curve that grows 2.5× over four years.</div>
+        </div>
+      </div>
+
+      <div class="timeline-row">
+        <div class="timeline-year">2022</div>
+        <div class="timeline-events">
+          <div class="ev local"><span class="tag local">Park City</span>Insight Public Sector spend rises to $76,203.</div>
+        </div>
+      </div>
+
+      <div class="timeline-row">
+        <div class="timeline-year">2023</div>
+        <div class="timeline-events">
+          <div class="ev local"><span class="tag local">Wasatch</span>Wasatch County pays Vigilant Solutions $100,000 — the largest direct ALPR-vendor payment in the region across six fiscal years.</div>
+          <div class="ev local"><span class="tag local">Summit</span>Summit County pays Vigilant Solutions LLC $10,280.</div>
+          <div class="ev alpr"><span class="tag alpr">Policy</span>Wasatch County Sheriff posts ALPR Policy 427 (Lexipol, December 12).</div>
+          <div class="ev local"><span class="tag local">Park City</span>Insight Public Sector spend rises to $114,594.</div>
+        </div>
+      </div>
+
+      <div class="timeline-row">
+        <div class="timeline-year">2024</div>
+        <div class="timeline-events">
+          <div class="ev alpr"><span class="tag alpr">Policy</span>Park City Police Lexipol Policy 429 revised April 23 — vendor-anonymous, contains language the Utah Privacy Office's 25-04 audit later flags as exceeding state law.</div>
+          <div class="ev national"><span class="tag national">National</span>August–November: federal agencies access Mountain View's Flock data through a silently enabled "Nationwide Lookup" setting.</div>
+          <div class="ev local"><span class="tag local">Park City</span>Insight Public Sector spend rises to $130,570.</div>
+        </div>
+      </div>
+
+      <div class="timeline-row">
+        <div class="timeline-year">2025</div>
+        <div class="timeline-events">
+          <div class="ev local"><span class="tag local">Park City</span>February 6: Park City RFP <a href="https://parkcity.gov/Home/Components/RFP/RFP/15864/2339">PCMC25107</a> filed. Sole-source $78,754 award to Motorola. The justification names "Motorola Vigilante" as the existing license plate reader system. The first public acknowledgment of the system.</div>
+          <div class="ev alpr"><span class="tag alpr">Statute</span>May 7: Utah HB 468 takes effect, hardening ALPR policy and reporting requirements.</div>
+          <div class="ev alpr"><span class="tag alpr">Mapping</span>April 23–27: An OpenStreetMap user named Ferrett documents nine ALPR cameras around the Park City basin — the first formal record of the perimeter.</div>
+          <div class="ev local"><span class="tag local">Park City</span>Insight Public Sector spend rises to $169,675 — a 2.5× increase from 2021.</div>
+          <div class="ev national"><span class="tag national">National</span>October: Richmond, California PD discovers federal agencies have been accessing its Flock data through the "National Lookup" feature.</div>
+        </div>
+      </div>
+
+      <div class="timeline-row">
+        <div class="timeline-year">2026</div>
+        <div class="timeline-events">
+          <div class="ev alpr"><span class="tag alpr">Mapping</span>January 25: r/ParkCity post "Flock cameras in Park City" — 126 upvotes, 82 comments. Residents document the perimeter publicly.</div>
+          <div class="ev alpr"><span class="tag alpr">Mapping</span>January 30–February 14: A second OSM mapping wave by user Tommy Tran, via the DeFlock app, adds eleven more cameras.</div>
+          <div class="ev alpr"><span class="tag alpr">Policy</span>February 10: Summit County Policy 460 uploaded to the county document portal — Lexipol footer dated, sections retain unfilled <code>[Department/Office]</code> placeholders.</div>
+          <div class="ev national"><span class="tag national">National</span>February 24: Mountain View City Council votes unanimously to terminate Flock contract. 250+ unapproved agencies had run ~600,000 searches against the city's data.</div>
+          <div class="ev national"><span class="tag national">National</span>Santa Clara County Board of Supervisors bars the Sheriff's Office from contracting with Flock. Santa Cruz and Los Altos Hills also terminate.</div>
+          <div class="ev national"><span class="tag national">National</span>March: Richmond extends Flock contract only short-term while exploring alternatives. Class-action lawsuit filed in California alleging 1.6M+ unauthorized SF database searches and 1M+ Los Altos searches.</div>
+          <div class="ev local"><span class="tag local">Heber</span>FY2026: Heber City pays Flock Safety $24,000 — first direct Flock payment by any agency in the Park City region.</div>
+          <div class="ev alpr"><span class="tag alpr">Publication</span>April 26: <em>The Real McCoy</em> publishes this investigation.</div>
+        </div>
+      </div>
+
+      <div class="timeline-legend">
+        <span class="l1">Park City–region spending</span>
+        <span class="l2">Local policy / mapping events</span>
+        <span class="l3">National Flock scandals &amp; contract terminations</span>
+      </div>
+    </div>
 
     <h2>The gap that remains</h2>
 
